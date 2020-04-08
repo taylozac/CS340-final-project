@@ -1,2 +1,11 @@
-# CS340-final-project
-CS 340: Group 12 Databases Project
+# CS340 Final Project
+
+## Group Members:
+* Michael Hathaway
+  * hathawam@oregonstate.edu
+* Eric Prather
+  * prathere@oregonstate.edu
+* Zachary Taylor
+  * taylozac@oregonstate.edu
+* Douglas Wilson
+  * wilsondo@oregonstate.edu
