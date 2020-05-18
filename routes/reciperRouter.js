@@ -6,7 +6,7 @@ const router = express.Router();
 
 // define routes
 router.get("/", (req, res, next) => {
-  res.status(200).render("home");
+  res.status(200).render("recipes");
 });
 
 // export the router

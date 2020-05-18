@@ -7,6 +7,7 @@ const path = require("path");
 
 // router imports
 const indexRouter = require("./routes/indexRouter");
+const recipeRouter = require("./routes/reciperRouter");
 
 // create new instance of express app and set port
 const app = express();
@@ -22,10 +23,7 @@ app.engine(
   exphbs({
     defaultLayout: "main",
     layoutsDir: path.join(__dirname, "views/layouts"),
-    partialsDir: [
-      //  path to your partials
-      path.join(__dirname, "views/partials"),
-    ],
+    partialsDir: path.join(__dirname, "views/partials"),
   })
 );
 app.set("view engine", "handlebars");
@@ -47,6 +45,7 @@ app.use(logger);
     App Routing -  connect routers the app
 */
 app.use("/", indexRouter);
+app.use("/recipes", recipeRouter);
 
 // set function to respond to any unhandled GET request
 app.get("*", (req, res, next) => {

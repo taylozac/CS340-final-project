@@ -5,14 +5,17 @@
 
 html, body {
     box-sizing: border-box;
-    height: 100%;  
     min-height: 100vh; 
-    width: 100%;
-    margin: 0; 
+    width: 100%; 
 
+    font-family: Roboto, Arial;
     background-image: var(--background-image);
 }
 
 *, *:before, *:after {
     box-sizing: inherit;
+
+    /* remove any margin or padding added by browser */
+    margin: 0;
+    padding: 0;
 }
