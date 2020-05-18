@@ -8,6 +8,7 @@ const path = require("path");
 // router imports
 const indexRouter = require("./routes/indexRouter");
 const recipeRouter = require("./routes/reciperRouter");
+const supplierRouter = require("./routes/supplierRouter");
 
 // create new instance of express app and set port
 const app = express();
@@ -46,10 +47,11 @@ app.use(logger);
 */
 app.use("/", indexRouter);
 app.use("/recipes", recipeRouter);
+app.use("/supplier", supplierRouter);
 
 // set function to respond to any unhandled GET request
 app.get("*", (req, res, next) => {
-  res.status(404).render("404");
+  res.status(404).render("404", { css: ["404.css"] });
 });
 
 // set function to handle other errors that occur

@@ -1,12 +1,18 @@
 const express = require("express");
-const mysql = require("./dbcon.js");
+const mysql = require("../dbcon.js");
 
 // create new router tp handle requests
 const router = express.Router();
 
-// define routes
+// recipe home page
 router.get("/", (req, res, next) => {
   res.status(200).render("recipes");
+});
+
+// recipe detail view
+router.get("/:r_id", (req, res, next) => {
+  let recipeID = req.params.r_id;
+  res.status(200).render("recipe_detail", { r_id: recipeID });
 });
 
 // export the router

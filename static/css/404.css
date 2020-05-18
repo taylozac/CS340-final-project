@@ -1,0 +1,12 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.message-container {
+    border-radius: 20px;
+    background-color: white;
+    padding: 50px 90px;
+    box-shadow: 5px 5px 20px black;
+}

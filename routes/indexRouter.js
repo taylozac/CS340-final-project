@@ -1,12 +1,22 @@
 const express = require("express");
-const mysql = require("./dbcon.js");
+const mysql = require("../dbcon.js");
 
 // create new router tp handle requests
 const router = express.Router();
 
-// define routes
+// homepage route
 router.get("/", (req, res, next) => {
-  res.status(200).render("home");
+  res.status(200).render("home", { css: [] });
+});
+
+// login page route
+router.get("/login", (req, res, next) => {
+  res.status(200).render("login", { css: [] });
+});
+
+//register page route
+router.get("/register", (req, res, next) => {
+  res.status(200).render("register", { css: [] });
 });
 
 // export the router
