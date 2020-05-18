@@ -12,8 +12,8 @@ const supplierRouter = require("./routes/supplierRouter");
 
 // create new instance of express app and set port
 const app = express();
-const port = process.env.port || 3000;
-// app.set("port", process.argv[2]); -- may need to change back to this later
+const port = process.argv[2] || 3000;
+app.set("port", port);
 
 /*
   Set up templating engine
