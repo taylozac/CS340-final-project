@@ -15,5 +15,11 @@ router.get("/:r_id", (req, res, next) => {
   res.status(200).render("recipe_detail", { r_id: recipeID });
 });
 
+//get recipes for specific user
+router.get("/user/:u_id", (req, res, next) => {
+  let userID = req.params.u_id;
+  res.status(200).render("recipes", { userID: userID });
+});
+
 // export the router
 module.exports = router;
