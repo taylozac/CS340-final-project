@@ -1,0 +1,239 @@
+.page-wrapper {
+    min-height: 100vh;
+    display:grid;
+    grid-template-columns: 9fr 4fr;
+    grid-template-areas: "logo login";
+}
+
+#username {
+    font-weight: bold;
+  }
+
+/* left column of body containing site logo and Title */
+.logo-column {
+
+    grid-area: logo;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* aligns content with respect to secondary axis */
+    /* justify-content: center; */ /* aligns content with respect to main axis*/
+}
+
+/* container holding logo and logo message */
+.logo-container {
+    width: auto;
+    height: auto;
+    /* border: 2px solid white;
+    border-radius: 10px; */
+    padding: 30px;
+    margin: 100px 20px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* target horizontal line in logo container */
+.logo-container  hr {
+    color: white;
+    width: 100%;
+}
+
+.logo {
+    font-size: 80px;
+    color: white;
+}
+
+.logo-message {
+    font-size: 30px;
+    color: white;
+    vertical-align: auto;
+}
+
+.login-column {
+    background-color: white;
+    margin: 0;
+
+    grid-area: login;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: -10px 0 30px rgb(34, 32, 32);
+}
+
+.form-container {
+    /* height: 450px; */
+    height: auto;
+    width: auto;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 50px;
+    padding-top: 15px;
+    background-color: white;
+    margin: 20px;
+}
+
+.form-title-container {
+    text-align: center;
+    margin: 20px;
+}
+
+.form-title-container h1,h3 {
+    font-family: 'Manrope', sans-serif;
+    margin: 0;
+    color: #3f2b96;
+}
+
+#login-form {
+    margin-top: 35px;
+}
+
+.form-logo {
+    display: none;
+    visibility: hidden;
+}
+
+.form-input-container {
+    margin: 10px;
+    border-bottom: 1px solid #ccc;
+    display: grid;
+    grid-template-columns: 1fr 7fr;
+}
+
+.form-input-container:focus-within {
+    border-bottom: 2px solid #3f2b96;
+}
+
+.form-container input,a {
+    font-size: 16px;
+}
+
+input {
+    -webkit-appearance: none; 
+    appearance: none;
+}
+
+.form-input-field {
+    margin: 7px;
+    border: none;
+    outline: none;
+}
+
+/* Div containing form buttons */
+.form-button-container {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+/* form submit and cancel buttons */
+.form-button {
+    background: #3f2b96;
+    color: white;
+    text-align: center;
+    margin: 25px;
+    padding: 8px;
+    border: 1px solid #3f2b96; 
+    border-radius: 10px;
+}
+
+
+.submit:hover {
+    background: #a8c0ff;
+    color: white;
+    border: 1px solid #a8c0ff;
+}
+
+
+.form-field-icon{
+    position: relative;
+    top: 8px;
+    left: 5px;
+    color: #3f2b96;
+}
+
+a {
+    text-decoration: none;
+}
+
+.registration-link-container {
+    text-align: center;
+    display: grid;
+    grid-template-columns: 1fr;
+    margin-top: 30px;
+}
+
+.register-button-container {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.register-button {
+    background: white;
+    color: #3f2b96;
+    text-align: center;
+    margin: 25px;
+    padding: 8px;
+    border: 1px solid #3f2b96; 
+    border-radius: 10px;
+}
+
+.register-button:hover {
+    background: #3f2b96;
+    color: white;
+}
+
+@media only screen and (max-width: 1100px){
+    .page-content {
+        display:grid;
+        grid-template-columns: 5fr 4fr;
+        grid-template-areas: "logo login";
+    }
+
+
+    .logo {
+        font-size: 50px;
+        color: white;
+    }
+
+    .logo-message {
+        font-size: 20px;
+        color: white;
+        vertical-align: auto;
+    }
+
+}
+
+@media only screen and (max-width: 850px) {
+    .page-content {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-areas: "login";
+    }
+
+    .logo-column {
+        display: none;
+        visibility: hidden;
+    }
+
+    .login-column {
+        background-image: linear-gradient(to bottom, #543864, #ff6363, #ffbd69);
+    }
+
+    .form-container {
+        box-shadow: 8px 8px 40px black;
+    }
+
+    .logo-container hr {
+        color: black;
+    }
+
+    .form-logo {
+        display: block;
+        visibility: visible;
+    }
+}

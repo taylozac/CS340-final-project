@@ -11,12 +11,12 @@ router.get("/", (req, res, next) => {
 
 // login page route
 router.get("/login", (req, res, next) => {
-  res.status(200).render("login", { css: [] });
+  res.status(200).render("login", { css: ["login.css"] });
 });
 
 //register page route
 router.get("/register", (req, res, next) => {
-  res.status(200).render("register", { css: [] });
+  res.status(200).render("register", { css: ["register.css"] });
 });
 
 // export the router

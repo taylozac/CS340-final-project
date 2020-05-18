@@ -1,1 +1,43 @@
-<h1>Login</h1>
+<div class="page-wrapper">
+
+    <div class="logo-column">
+        <div class="logo-container">
+            <h1 class="logo">EasyEats <i class="fas fa-hamburger fa-lg"></i></h1>
+            <hr>
+            <h3 class="logo-message">Find and share recipes</h3>
+        </div>
+    </div>
+    
+    <div class="login-column">
+        <div class="form-container">
+            <div class="form-title-container">
+                <h1 class="form-logo">EasyEats <i class="fas fa-hamburger fa-lg"></i></h1>
+                <hr class="form-logo">
+                <h1>Login</h1>
+            </div>
+            <form id="login-form" method="post" action="">
+                <span class="form-input-container">
+                    <i class="form-field-icon fas fa-user fa-lg"></i>
+                    <input class="form-input-field" type="text" name="username" placeholder="username" required>
+                </span>
+                <span class="form-input-container">
+                    <i class="form-field-icon fas fa-lock fa-lg"></i>
+                    <input class="form-input-field" type="password" name="password" placeholder="password" required>
+                </span>
+                <span class="form-button-container">
+                    <input class="form-button submit" type="submit" value="login">
+                    <input type="hidden" name="next" value="{{ next }}">
+                </span>
+            </form>
+    
+            <hr>
+            <div class="registration-link-container">
+                <h3>Don't have an account?</h3>
+                <span class="register-button-container">
+                    <a class="register-button" href="/register">Register</a>
+                </span>
+            </div>
+        </div>
+    </div>
+
+</div>
