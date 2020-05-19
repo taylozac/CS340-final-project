@@ -1,6 +1,11 @@
+body {
+    display:grid;
+    grid-template-rows: auto 1fr;
+}
+
 .page-wrapper {
     width: 100vw;
-    height: 100vh;
+    height: 100%;
 }
 
 .form-container {

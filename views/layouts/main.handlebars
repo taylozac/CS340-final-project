@@ -18,7 +18,7 @@
 
 	{{!-- include other styling --}}
 	{{#each css}}
-		<link rel="stylesheet" href="CSS/{{this}}">
+		<link rel="stylesheet" href="/CSS/{{this}}">
 	{{/each}}
 </head>
 <body>
@@ -36,10 +36,12 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
 		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
 		crossorigin="anonymous"></script>
+	{{!-- axios CDN --}}
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 		
 	{{!-- include other javascript --}}
 	{{#each js}}
-		<script src="/javascript/{{this}}"></script>
+		<script type="module" src="/javascript/{{this}}"></script>
 	{{/each}}
 </body>
 </html>

@@ -1,0 +1,8 @@
+.recipe-preview-card {
+    background-color: white;
+    border-radius: 10px;
+    margin: 20px;
+    padding: 10px;
+    height: 200px;
+    overflow: hidden;
+}
