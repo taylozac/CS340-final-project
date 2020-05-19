@@ -14,6 +14,7 @@
     display: flex;
     align-items: baseline;
     justify-content: space-around;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.6);
 }
 
 .page-title {
@@ -40,7 +41,7 @@
 
 .recipe-button a {
     text-decoration: none;
-    padding: 10px 40px;
+    padding: 5px 15px;
     color: #3f2b96;
     background-color: white;
     border: 3px solid #3f2b96;
