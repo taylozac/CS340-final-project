@@ -23,9 +23,12 @@ router.get("/user/:u_id", (req, res, next) => {
 // recipe detail view
 router.get("/detail/:r_id", (req, res, next) => {
   let recipeID = req.params.r_id;
-  res.status(200).render("recipe_detail", { r_id: recipeID });
+  res
+    .status(200)
+    .render("recipe_detail", { r_id: recipeID, css: ["recipe_detail.css"] });
 });
 
+// create new recipe view
 router.get("/create", (req, res, next) => {
   res
     .status(200)
