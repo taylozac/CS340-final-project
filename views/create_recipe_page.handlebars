@@ -1,1 +1,26 @@
-<h1>Create New Recipe</h1>
+<div class="page-wrapper">
+
+    <div class="form-container">
+        <div class="form-title-container">
+            <h1 class="form-logo">EasyEats <i class="fas fa-hamburger fa-lg"></i></h1>
+            <hr class="form-logo">
+            <h3>Create New Recipe</h3>
+        </div>
+        <form id="new-recipe-form" method="post" action="">
+            <span class="form-input-container">
+                <i class="form-field-icon fas fa-utensils fa-lg"></i>
+                <input class="form-input-field" type="text" name="title" placeholder="Recipe Title" required>
+            </span>
+            <span class="form-input-container">
+                <i class="form-field-icon fas fa-user fa-lg"></i>
+                <input class="form-input-field" type="text" name="author" placeholder="Author" required>
+            </span>
+            <span class="form-textarea no-border">
+                <i class="form-field-icon far fa-sticky-note fa-lg"></i>
+                <textarea name="description" id="recipe-desription" placeholder="directions..." cols="30" rows="10"></textarea>
+            </span>
+        </form>
+
+    </div>
+
+</div>

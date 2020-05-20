@@ -27,7 +27,9 @@ router.get("/detail/:r_id", (req, res, next) => {
 });
 
 router.get("/create", (req, res, next) => {
-  res.status(200).render("create_recipe_page", { css: [] });
+  res
+    .status(200)
+    .render("create_recipe_page", { css: ["create_recipe_page.css"] });
 });
 
 // export the router

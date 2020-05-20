@@ -5,7 +5,7 @@ const router = express.Router();
 
 // supplier home page
 router.get("/", (req, res, next) => {
-  res.status(200).render("supplier", { css: [] });
+  res.status(200).render("supplier", { css: ["supplier.css"] });
 });
 
 module.exports = router;
