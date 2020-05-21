@@ -1,0 +1,127 @@
+body {
+    display:grid;
+    grid-template-rows: auto 1fr;
+}
+
+.page-wrapper {
+    width: 100vw;
+    height: 100%;
+}
+
+.form-container {
+    /* Center in the page */
+    position: relative;
+    top: 50%;
+    left: 50%;
+    /* bring your own prefixes */
+    transform: translate(-50%, -50%);
+    
+    height: auto;
+    width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 30px;
+    padding-top: 5px;
+    background-color: white;
+    box-shadow: 6px 6px 50px;
+}
+
+.form-title-container {
+    text-align: center;
+    margin: 20px;
+    font-size: 20px;
+}
+
+h3 {
+    font-size: 20px;
+}
+
+.form-title-container h1,h3 {
+    /* font-family: 'Courier', Courier, monospace; */
+    font-family: 'Manrope', sans-serif;
+    color: #3f2b96;
+    margin: 0;
+}
+
+.form-title-container {
+    color: #3f2b96;
+}
+
+#login-form {
+    margin-top: 35px;
+}
+
+.form-input-container {
+    margin: 10px;
+    border-bottom: 1px solid #ccc;
+    display: grid;
+    grid-template-columns: 1fr 7fr;
+}
+
+.form-input-container:focus-within {
+    border-bottom: 2px solid #3f2b96;
+}
+
+.form-container input,a {
+    font-family: arial;
+    font-size: 16px;
+}
+
+input {
+    -webkit-appearance: none; 
+    appearance: none;
+}
+
+.form-input-field {
+    margin: 7px;
+    border: none;
+    outline: none;
+}
+
+/* Div containing form buttons */
+.form-button-container {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+/* form submit and cancel buttons */
+.form-button {
+    background: #3f2b96;
+    color: white;
+    text-align: center;
+    margin: 25px;
+    padding: 8px;
+    border: 1px solid #3f2b96; 
+    border-radius: 10px;
+    outline: none;
+}
+
+
+.submit:hover {
+    background: #a8c0ff;
+    color: white;
+    border: 1px solid #a8c0ff;
+}
+
+
+.form-field-icon{
+    position: relative;
+    top: 8px;
+    left: 5px;
+    color: #3f2b96;
+}
+
+a {
+    text-decoration: none;
+    outline: none;
+}
+
+.form-textarea {
+    margin: 10px;
+    display: grid;
+    grid-template-columns: 1fr 7fr;
+}
+
+.form-textarea textarea {
+    padding: 5px;
+}
