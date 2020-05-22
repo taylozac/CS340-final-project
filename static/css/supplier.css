@@ -1,0 +1,40 @@
+.page-wrapper {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.6);
+    padding: 20px;
+}
+
+.supplier-button {
+    text-decoration: none;
+    padding: 5px 15px;
+    color: #3f2b96;
+    background-color: white;
+    border: 3px solid #3f2b96;
+    border-radius: 10px;
+    margin: 20px;
+}
+
+.supplier-button:hover {
+    color: white;
+    background-color: #3f2b96;
+    border: 3px solid #3f2b96;
+}
+
+.tool-container {
+    padding: 10px;
+    margin: 10px;
+}
+
+.ingredients-container {
+    padding: 10px;
+    margin: 10px;
+}

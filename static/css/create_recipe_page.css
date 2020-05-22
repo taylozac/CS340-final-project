@@ -116,29 +116,12 @@ a {
     outline: none;
 }
 
-.login-link-container {
-    text-align: center;
+.form-textarea {
+    margin: 10px;
     display: grid;
-    grid-template-columns: 1fr;
-    margin-top: 20px;
+    grid-template-columns: 1fr 7fr;
 }
 
-.login-button-container {
-    display: grid;
-    grid-template-columns: 1fr;
-}
-
-.login-button {
-    background: white;
-    color: #3f2b96;
-    text-align: center;
-    margin: 25px;
-    padding: 8px;
-    border: 1px solid #3f2b96; 
-    border-radius: 10px;
-}
-
-.login-button:hover {
-    background: #3f2b96;
-    color: white;
+.form-textarea textarea {
+    padding: 5px;
 }

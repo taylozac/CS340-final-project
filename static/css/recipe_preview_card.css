@@ -1,0 +1,14 @@
+.recipe-preview-card {
+    background-color: white;
+    border-radius: 10px;
+    margin: 20px;
+    padding: 10px;
+    height: 200px;
+    overflow: hidden;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.6);
+    border: 5px solid #3f2b96;
+}
+
+.recipe-preview-card:hover {
+    box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.6);
+}
