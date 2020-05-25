@@ -1,12 +1,12 @@
 <div class="recipe-preview-card">
     <div class="recipe-header">
-        <h1 class="recipe-title">Recipe Title:</h1>
+        <h1 class="recipe-title">Recipe Title: {{this.title}}</h1>
     </div>
     <div class="recipe-info">
-        <h4 class="recipe-author">Recipe Author:</h4>
-        <p class="recipe-description">Recipe Description:</p>
+        <h4 class="recipe-author">Recipe Author: {{this.username}}</h4>
+        <p class="recipe-description">Recipe Description: {{this.directions}}</p>
     </div>
     <div class="recipe-button">
-        <a href="/recipes/1">View recipe<i class="fas fa-arrow-right"></i></a>
+        <a href="/recipes/detail/{{this.r_id}}">View recipe<i class="fas fa-arrow-right"></i></a>
     </div>
 </div>
