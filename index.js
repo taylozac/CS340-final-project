@@ -4,6 +4,9 @@ const mysql = require("./dbcon.js");
 const hbs = require("handlebars");
 const exphbs = require("express-handlebars");
 const path = require("path");
+const bodyParser = require("body-parser");
+const cookieSession = require("cookie-session");
+const bcrypt = require("bcrypt");
 
 // router imports
 const indexRouter = require("./routes/indexRouter");
@@ -14,6 +17,10 @@ const supplierRouter = require("./routes/supplierRouter");
 const app = express();
 const port = process.argv[2] || 3000;
 app.set("port", port);
+
+// ste body parser setting
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 /*
   Set up templating engine
@@ -41,6 +48,15 @@ function logger(req, res, next) {
 }
 //set app to use the logger
 app.use(logger);
+
+// APPLY COOKIE SESSION MIDDLEWARE
+app.use(
+  cookieSession({
+    name: "session",
+    keys: ["key1", "key2"],
+    maxAge: 3600 * 1000, // 1hr
+  })
+);
 
 /*
     App Routing -  connect routers the app

@@ -1,5 +1,6 @@
 const express = require("express");
 const mysql = require("../dbcon.js");
+const sessionMiddleware = require("../sessionMiddleware.js");
 
 const router = express.Router();
 
