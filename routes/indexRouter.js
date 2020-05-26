@@ -1,6 +1,5 @@
 const express = require("express");
 const cookieSession = require("cookie-session");
-const bcrypt = require("bcrypt");
 const mysql = require("../dbcon.js");
 const sessionMiddleware = require("../sessionMiddleware.js");
 
@@ -35,15 +34,12 @@ router.post("/login", sessionMiddleware.ifLoggedin, (req, res, next) => {
     mysql.pool.query(
       "SELECT * FROM End_User u WHERE u.username = ?",
       [username],
-      async (err, rows) => {
+      (err, rows) => {
         // see if existing user is returned
         if (rows && rows.length == 1) {
           try {
             // check password
-            let passwordsMatch = await bcrypt.compare(
-              password,
-              rows[0].password
-            );
+            let passwordsMatch = password == rows[0].password;
 
             if (passwordsMatch) {
               // create cookie to track user
@@ -94,14 +90,14 @@ router.post("/register", sessionMiddleware.ifLoggedin, (req, res, next) => {
     mysql.pool.query(
       "SELECT * FROM End_User u WHERE u.username = ?",
       [username],
-      async (err, rows) => {
+      (err, rows) => {
         if (rows.length == 0) {
           // username doesn't exist
           // hash password and create new user
-          let hashedPassword = await bcrypt.hash(password, 12);
+          //let hashedPassword = await bcrypt.hash(password, 12);
           mysql.pool.query(
             "INSERT INTO End_User (username, password) VALUES (?, ?)",
-            [username, hashedPassword],
+            [username, password],
             (err) => {
               if (err) {
                 //handle error

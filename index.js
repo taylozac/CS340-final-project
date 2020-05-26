@@ -6,7 +6,6 @@ const exphbs = require("express-handlebars");
 const path = require("path");
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
-const bcrypt = require("bcrypt");
 
 // router imports
 const indexRouter = require("./routes/indexRouter");
