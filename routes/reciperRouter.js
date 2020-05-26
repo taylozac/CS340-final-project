@@ -9,9 +9,10 @@ const router = express.Router();
 // get recipes for specific user
 //
 router.get("/user/:u_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
-  let userID = req.params.u_id;
+  let currentUser = req.session.username;
+
   res.status(200).render("recipes", {
-    userID: userID,
+    username: currentUser,
     css: ["recipes.css", "recipe_preview_card.css"],
     js: ["recipe_search_bar.js"],
   });
@@ -20,7 +21,9 @@ router.get("/user/:u_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
 //
 // recipe home page - view all recipes in the database
 //
-router.get("/", (req, res, next) => {
+router.get("/", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
+  let currentUser = req.session.username;
+
   // qeury dataebase for all recipes
   mysql.pool.query("SELECT * FROM Recipe", function (err, rows, fields) {
     if (err) {
@@ -31,6 +34,7 @@ router.get("/", (req, res, next) => {
         css: ["recipes.css", "recipe_preview_card.css"],
         js: ["recipe_search_bar.js"],
         recipes: rows,
+        username: currentUser,
       });
     }
   });
@@ -39,37 +43,46 @@ router.get("/", (req, res, next) => {
 //
 // Detail view of an individual recipe
 //
-router.get("/detail/:r_id", (req, res, next) => {
-  let recipeID = req.params.r_id;
-  mysql.pool.query(
-    `SELECT * FROM Recipe r WHERE r.r_id = ${recipeID}`,
-    function (err, rows, fields) {
-      if (err) {
-        res.status(500).send("Couldn't retrieve the recipe.");
+router.get(
+  "/detail/:r_id",
+  sessionMiddleware.ifNotLoggedin,
+  (req, res, next) => {
+    let currentUser = req.session.username;
+    let recipeID = req.params.r_id;
+    mysql.pool.query(
+      `SELECT * FROM Recipe r WHERE r.r_id = ${recipeID}`,
+      function (err, rows, fields) {
+        if (err) {
+          res.status(500).send("Couldn't retrieve the recipe.");
+        }
+        // send queried data in response
+        res.status(200).render("recipe_detail", {
+          css: ["recipe_detail.css"],
+          recipe: rows[0],
+          username: currentUser,
+        });
       }
-      // send queried data in response
-      res.status(200).render("recipe_detail", {
-        css: ["recipe_detail.css"],
-        recipe: rows[0],
-      });
-    }
-  );
-});
+    );
+  }
+);
 
 //
 // create new recipe view
 //
 router.get("/create", (req, res, next) => {
+  let currentUser = req.session.username;
+
   res.status(200).render("create_recipe_page", {
     css: ["create_recipe_page.css"],
     js: ["create_recipe.js"],
+    username: currentUser,
   });
 });
 
 //
 // handle submitted form for new recipe
 //
-router.post("/create", (req, res, next) => {
+router.post("/create", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
   try {
     // get value from form and create recipe in database
     const { title, author, description } = req.body;

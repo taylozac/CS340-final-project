@@ -67,7 +67,11 @@ app.use("/supplier", supplierRouter);
 
 // set function to respond to any unhandled GET request
 app.get("*", (req, res, next) => {
-  res.status(404).render("404", { css: ["404.css"] });
+  res.status(404).render("error", {
+    css: ["error.css"],
+    status: 404,
+    message: "Page could not be found!",
+  });
 });
 
 // set function to handle other errors that occur

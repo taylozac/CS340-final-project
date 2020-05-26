@@ -1,43 +1,93 @@
 const express = require("express");
+const cookieSession = require("cookie-session");
+const bcrypt = require("bcrypt");
 const mysql = require("../dbcon.js");
 const sessionMiddleware = require("../sessionMiddleware.js");
 
 // create new router tp handle requests
 const router = express.Router();
 
+//
 //  base route leads to login page
-
-router.get("/", (req, res, next) => {
+//
+router.get("/", sessionMiddleware.ifLoggedin, (req, res, next) => {
   res
     .status(200)
     .render("login", { css: ["login.css"], js: ["login_form_validation.js"] });
 });
 
+//
 // login page route
-router.get("/login", (req, res, next) => {
+//
+router.get("/login", sessionMiddleware.ifLoggedin, (req, res, next) => {
   res
     .status(200)
     .render("login", { css: ["login.css"], js: ["login_form_validation.js"] });
 });
 
+//
 // handle login post request
-router.post("/login", (req, res, next) => {
+//
+router.post("/login", sessionMiddleware.ifLoggedin, (req, res, next) => {
   const { username, password } = req.body;
+  console.log(username, password);
+  try {
+    // query database for user
+    mysql.pool.query(
+      "SELECT * FROM End_User u WHERE u.username = ?",
+      [username],
+      async (err, rows) => {
+        console.log(rows);
+        if (rows.length == 1) {
+          try {
+            // check password
+            let passwordsMatch = await bcrypt.compare(
+              password,
+              rows[0].password
+            );
 
-  // TODO: query database to check if user exist
+            if (passwordsMatch) {
+              // create cookie to track user
+              req.session.isLoggedIn = true;
+              req.session.username = rows[0].username;
 
-  res.status(400).send("success");
+              res.send({ wasSuccess: true });
+            } else {
+              res.send({
+                wasSuccess: false,
+                message: "Passwords do not match.",
+              });
+            }
+          } catch (err) {
+            res.send({
+              wasSuccess: false,
+              message: "Username does not exist.",
+            });
+          }
+        } else {
+          res.send({ wasSuccess: false, message: "Username does not exist." });
+        }
+      }
+    );
+  } catch (err) {
+    res.status(500).send("Username and Password not recognized");
+  }
 });
 
+//
 //register page route -- GET
+//
 router.get("/register", sessionMiddleware.ifLoggedin, (req, res, next) => {
   res
     .status(200)
     .render("register", { css: ["register.css"], js: ["register.js"] });
 });
 
+//
 // Register page route -- POST
-router.post("/register", (req, res, next) => {
+//
+router.post("/register", sessionMiddleware.ifLoggedin, (req, res, next) => {
+  // get username and password from request
   const { username, password } = req.body;
 
   // check if username already exists
@@ -45,33 +95,52 @@ router.post("/register", (req, res, next) => {
     mysql.pool.query(
       "SELECT * FROM End_User u WHERE u.username = ?",
       [username],
-      function (err, rows, fields) {
-        // if rows in database, then username already exists
-        if (rows.length !== 0) {
-          res.status(500).send({ message: "That username is already taken" });
-        } else {
-          // otherwise create new user
-          try {
-            mysql.pool.query(
-              "INSERT INTO End_User(username, password) VALUES(?, ?)",
-              [username, password],
-              (err) => {
-                res.status(200).render("home", { css: ["home.css"] });
+      async (err, rows) => {
+        if (rows.length == 0) {
+          // username doesn't exist
+          // hash password and create new user
+          let hashedPassword = await bcrypt.hash(password, 12);
+          mysql.pool.query(
+            "INSERT INTO End_User (username, password) VALUES (?, ?)",
+            [username, hashedPassword],
+            (err) => {
+              if (err) {
+                //handle error
+                res.send({ wasSuccess: false });
+              } else {
+                // send success message to client side
+                res.send({ wasSuccess: true });
               }
-            );
-          } catch (err) {
-            res.status(500).send("An error occurred, please try again later!");
-          }
+            }
+          );
+        } else {
+          // username already exists
+          res.send({ wasSuccess: false });
         }
       }
     );
   } catch (err) {
-    res.status(500).send("An error occurred, please try again later!");
+    // handle error
+    req.render("error", { status: 500, message: "Something went wrong 🤷‍♂️" });
   }
 });
 
+//
+// logout
+//
+router.get("/logout", (req, res, next) => {
+  req.session = null;
+  res
+    .status(200)
+    .render("login", { css: ["login.css"], js: ["login_form_validation.js"] });
+});
+
+//
+// Homepage
+//
 router.get("/home", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
-  res.status(200).render("home", { css: ["home.css"] });
+  let currentUser = req.session.username;
+  res.status(200).render("home", { css: ["home.css"], username: currentUser });
 });
 
 // export the router

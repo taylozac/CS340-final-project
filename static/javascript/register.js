@@ -9,7 +9,7 @@ registerForm.addEventListener("submit", async (event) => {
   let username = registerForm.elements["username"].value;
   let password = registerForm.elements["password"].value;
   let passwordConfirm = registerForm.elements["confirm-password"].value;
-
+  console.log(username);
   // check that passwords are the same
   if (password !== passwordConfirm) {
     alert("Passwords must match!");
@@ -21,9 +21,18 @@ registerForm.addEventListener("submit", async (event) => {
         username,
         password,
       });
+
+      if (response.data.wasSuccess) {
+        // user created
+        alert("Account created! Navigate to the login page and sign in!!");
+        registerForm.reset();
+      } else {
+        // username already in use
+        alert("username already in use!");
+        registerForm.reset();
+      }
     } catch (err) {
-      console.log(err.message);
-      alert("Error:");
+      alert("Error: An error has occurred");
     }
   }
 });

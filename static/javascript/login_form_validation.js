@@ -15,7 +15,14 @@ loginForm.addEventListener("submit", async (event) => {
       username: username,
       password: password,
     });
+
+    if (!response.data.wasSuccess) {
+      alert(response.data.message);
+    } else {
+      window.location = "/home";
+    }
   } catch (err) {
     alert("Username and password not recognized");
+    loginForm.reset();
   }
 });

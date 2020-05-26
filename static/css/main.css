@@ -24,3 +24,15 @@ body {
     display:grid;
     grid-template-rows: auto 1fr;
 }
+
+.username-container {
+    margin-left: 35px;
+    padding: 5px 15px;
+    color: #3f2b96;
+    border: 5px solid #3f2b96;
+    border-radius: 15px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
