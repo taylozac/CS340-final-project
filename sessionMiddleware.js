@@ -3,7 +3,7 @@
 // if user is not logged in, redirect to login page
 const ifNotLoggedin = (req, res, next) => {
   if (!req.session.isLoggedIn) {
-    return res.status(200).render("login", { css: ["login.css"] });
+    return res.status(200).redirect("/login");
   }
   next();
 };

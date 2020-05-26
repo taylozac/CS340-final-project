@@ -11,9 +11,8 @@ const router = express.Router();
 //  base route leads to login page
 //
 router.get("/", sessionMiddleware.ifLoggedin, (req, res, next) => {
-  res
-    .status(200)
-    .render("login", { css: ["login.css"], js: ["login_form_validation.js"] });
+  res.status(200).redirect("/login");
+  //.render("login", { css: ["login.css"], js: ["login_form_validation.js"] });
 });
 
 //
@@ -30,14 +29,14 @@ router.get("/login", sessionMiddleware.ifLoggedin, (req, res, next) => {
 //
 router.post("/login", sessionMiddleware.ifLoggedin, (req, res, next) => {
   const { username, password } = req.body;
-  console.log(username, password);
+
   try {
     // query database for user
     mysql.pool.query(
       "SELECT * FROM End_User u WHERE u.username = ?",
       [username],
       async (err, rows) => {
-        console.log(rows);
+        // see if existing user is returned
         if (rows && rows.length == 1) {
           try {
             // check password
