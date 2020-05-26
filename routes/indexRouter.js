@@ -38,7 +38,7 @@ router.post("/login", sessionMiddleware.ifLoggedin, (req, res, next) => {
       [username],
       async (err, rows) => {
         console.log(rows);
-        if (rows.length == 1) {
+        if (rows && rows.length == 1) {
           try {
             // check password
             let passwordsMatch = await bcrypt.compare(

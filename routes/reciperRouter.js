@@ -8,7 +8,8 @@ const router = express.Router();
 //
 // get recipes for specific user
 //
-router.get("/user/:u_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
+router.get("/user", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
+  // specific user information is from session/cookie, not info in url
   let currentUser = req.session.username;
 
   res.status(200).render("recipes", {
