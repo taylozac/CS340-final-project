@@ -12,13 +12,14 @@ router.get("/", (req, res, next) => {
   mysql.pool.query("SELECT * FROM Recipe", function (err, rows, fields) {
     if (err) {
       res.status(500).send("Couldn't retrieve the recipes.");
+    } else {
+      // send queried data in response
+      res.status(200).render("recipes", {
+        css: ["recipes.css", "recipe_preview_card.css"],
+        js: ["recipe_search_bar.js"],
+        recipes: rows,
+      });
     }
-    // send queried data in response
-    res.status(200).render("recipes", {
-      css: ["recipes.css", "recipe_preview_card.css"],
-      js: ["recipe_search_bar.js"],
-      recipes: rows,
-    });
   });
 });
 
