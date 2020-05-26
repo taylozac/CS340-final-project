@@ -1,15 +1,15 @@
 <div class="page-wrapper">
     <div class="recipe-container">
         <div class="recipe-header">
-            <h1 class="">Recipe Title</h1>
+            <h1 class="">Recipe Title: {{recipe.title}}</h1>
         </div>
         <div class="recipe-info">
             <div class="recipe-author">
-                <h4>Authors name</h4>
+                <h4>Author's name: {{recipe.username}}</h4>
             </div>
             <div class="recipe-description">
                 <p class="description">
-                    Instructions for the recipe...
+                    {{recipe.directions}}
                 </p>
             </div>
             <button id="recipe-save-button" class="recipe-button">Save Recipe</button>

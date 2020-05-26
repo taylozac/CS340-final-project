@@ -6,13 +6,27 @@ const sessionMiddleware = require("../sessionMiddleware.js");
 const router = express.Router();
 
 //  base route leads to login page
-router.get("/", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
-  res.status(200).render("login", { css: ["login.css"] });
+
+router.get("/", (req, res, next) => {
+  res
+    .status(200)
+    .render("login", { css: ["login.css"], js: ["login_form_validation.js"] });
 });
 
-// login page route -- GET
-router.get("/login", sessionMiddleware.ifLoggedin, (req, res, next) => {
-  res.status(200).render("login", { css: ["login.css"] });
+// login page route
+router.get("/login", (req, res, next) => {
+  res
+    .status(200)
+    .render("login", { css: ["login.css"], js: ["login_form_validation.js"] });
+});
+
+// handle login post request
+router.post("/login", (req, res, next) => {
+  const { username, password } = req.body;
+
+  // TODO: query database to check if user exist
+
+  res.status(400).send("success");
 });
 
 //register page route -- GET

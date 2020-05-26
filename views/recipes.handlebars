@@ -8,8 +8,9 @@
             {{/if}}
         </div>
         <div class="search-bar">
-            <form action="">
-                <input type="text" placeholder="Search recipes...">
+            <form name="search-form" action="">
+                <input type="text" name="search-bar" placeholder="Search recipes...">
+                <input type="submit" class="search" name="search-button" value="search">
             </form>
         </div>
 
@@ -19,10 +20,11 @@
         
     </div>
     <div class="recipe-container">
-        {{!-- {{#each recipes}}
+        {{#each recipes}}
             {{> recipe_preview }}
-        {{/each}} --}}
-        <div class="recipe-preview-card">
+        {{/each}}
+        
+        {{!-- <div class="recipe-preview-card">
             <div class="recipe-header">
                 <h1 class="recipe-title">Recipe Title:</h1>
             </div>
@@ -59,6 +61,6 @@
             <div class="recipe-button">
                 <a href="/recipes/detail/1">View recipe<i class="fas fa-arrow-right"></i></a>
             </div>
-        </div>
+        </div> --}}
     </div>
 </div>
