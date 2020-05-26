@@ -4,6 +4,7 @@ const mysql = require("./dbcon.js");
 const hbs = require("handlebars");
 const exphbs = require("express-handlebars");
 const path = require("path");
+var bodyParser = require("body-parser");
 
 // router imports
 const indexRouter = require("./routes/indexRouter");
@@ -14,6 +15,10 @@ const supplierRouter = require("./routes/supplierRouter");
 const app = express();
 const port = process.argv[2] || 3000;
 app.set("port", port);
+
+// ste body parser setting
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 /*
   Set up templating engine
