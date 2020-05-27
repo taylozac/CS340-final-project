@@ -14,7 +14,7 @@ try {
     // to double-up queries? Might no longer be appropriate to call the page
     // parameter "tools" anymore.
     mysql.pool.query(
-        "SELECT * FROM Tool t INNER JOIN manufactures m ON m.t_id = t.t_id INNER JOIN Supplier s ON s.s_id = m.s_id WHERE username=? ORDER BY t.t_id DESC;",
+        "SELECT t.name, t.description FROM Tool t INNER JOIN manufactures m ON m.t_id = t.t_id INNER JOIN Supplier s ON s.s_id = m.s_id WHERE username=? ORDER BY t.t_id DESC;",
         [currentUser], // This parameter is given to the SQL.
         function(err, rows, fields) {
             if(!err) { // No SQL Error
