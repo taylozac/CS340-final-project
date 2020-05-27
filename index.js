@@ -11,6 +11,7 @@ const cookieSession = require("cookie-session");
 const indexRouter = require("./routes/indexRouter");
 const recipeRouter = require("./routes/reciperRouter");
 const supplierRouter = require("./routes/supplierRouter");
+const toolRouter = require("./routes/toolRouter"); // postfix .js?
 
 // create new instance of express app and set port
 const app = express();
@@ -63,6 +64,7 @@ app.use(
 app.use("/", indexRouter);
 app.use("/recipes", recipeRouter);
 app.use("/supplier", supplierRouter);
+app.use("/tools", toolRouter);
 
 // set function to respond to any unhandled GET request
 app.get("*", (req, res, next) => {
