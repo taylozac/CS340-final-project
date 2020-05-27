@@ -60,18 +60,34 @@ router.get("/add_tool", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
 router.post("/add_tool", sessionMiddleware.ifNotLoggedin, (req, res, next)=>{
     try {
         const { name, description } = req.body;
-
+        // TODO: Update this logic so if the tool already exists a reference
+        // is instead made to it.
+        // I was trying to do a stored procedure for this but was unable to get it to work ideally. So instead
+        // I am working on just trying to do a multi-line statement.
+        //var my_sql_con = mysql.createConnection({multipleStatements: true});
+        //my_sql.pool.multipleStatements = true;
         mysql.pool.query(
-            "INSERT INTO Tool (name, description) VALUES(?, ?)",
-            [name, description],
+            "INSERT INTO Tool (name, description) VALUES(?, ?); INSERT INTO manufactures (s_id, t_id) VALUES ((SELECT s_id FROM Supplier WHERE username = ?), (SELECT t_id FROM Tool WHERE name = ?))",
+            [name, description, req.session.username, name],
             function (err, result) {
                 if(err)
-                    res.status(500).send("Error creating tool.");
+                {
+                    //my_sql.pool.multipleStatements = false;
+                    res.status(500).send("Error creating tool.\n" + err);
+                }
                 else
-                    res.status(200).send("Created tool.");
+                {
+                    //my_sql.pool.multipleStatements = false;
+                    // Tool created; now register it with the manufacturer.
+                    //mysql.pool.query("CALL registerUserNewTool(?, ?)",
+                    // I couldn't figure out stored procedures so I'm doing
+                    // this instead for now:
+                    res.status(200).send("Created tool and registered with manufacturer");
+                }
             }
         ); // end query
     } catch (err) {
+        //my_sql.pool.multipleStatements = false;
         res.status(500).send("Unexpected exception while creating tool.");
     } // end catch
 }); // end router.post
