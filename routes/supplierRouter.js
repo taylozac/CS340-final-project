@@ -6,10 +6,31 @@ const router = express.Router();
 
 // supplier home page
 router.get("/", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
-  let currentUser = req.session.username;
-  res
-    .status(200)
-    .render("supplier", { css: ["supplier.css"], username: currentUser });
+try {
+    let currentUser = req.session.username;
+    // This SQL query could use work if we violate the assumption that all
+    // users only manage exactly one supplier if they manage one.
+    // Also, I'm not sure how to expand this to include ingredients. Is it possible
+    // to double-up queries? Might no longer be appropriate to call the page
+    // parameter "tools" anymore.
+    mysql.pool.query(
+        "SELECT * FROM Tool t INNER JOIN manufactures m ON m.t_id = t.t_id INNER JOIN Supplier s ON s.s_id = m.s_id WHERE username=? ORDER BY t.t_id DESC;",
+        [currentUser], // This parameter is given to the SQL.
+        function(err, rows, fields) {
+            if(!err) { // No SQL Error
+                res.status(200).render("supplier", {
+                    css: ["supplier.css"],
+                    username: currentUser,
+                    tools: rows//, Next should be ingredients
+                }); // End render
+            } else {
+                res.status(500).send("Couldn't load the tools...\n" + err);
+            }
+        } // end SQL result handler
+    ); // end SQL query block
+} catch(unknown) {
+    res.status(500).send("Unknown error detected while loading tools...");
+} // end try catch
 });
 
 // add new ingredient page

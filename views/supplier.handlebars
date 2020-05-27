@@ -12,10 +12,12 @@
             <a href="/supplier/add_ingredient" class="supplier-button">Add Ingredient</a>
         </div>
         <div class="tool-container">
-            <ul class="tools">
-                <li>tool</li>
-                <li>tool</li>
-                <li>tool</li>
+            <ul class="tools"> <!--Using handlebars to show off each tool.-->
+                <!--Opting not to use a template for this since tools are
+                so simple to ennumerate.-->
+                {{#each tools}}
+                    <li><strong>{{tools.name}}:</strong> {{tools.description}}</li>
+                {{/each}}
             </ul>
             <a href="/supplier/add_tool" class="supplier-button">Add Tool</a>
         </div>
