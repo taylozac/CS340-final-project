@@ -67,8 +67,8 @@ router.post("/add_tool", sessionMiddleware.ifNotLoggedin, (req, res, next)=>{
         //var my_sql_con = mysql.createConnection({multipleStatements: true});
         //my_sql.pool.multipleStatements = true;
         mysql.pool.query(
-            "INSERT INTO Tool (name, description) VALUES(?, ?); INSERT INTO manufactures (s_id, t_id) VALUES ((SELECT s_id FROM Supplier WHERE username = ?), (SELECT t_id FROM Tool WHERE name = ?))",
-            [name, description, req.session.username, name],
+            "INSERT INTO Tool (name, description) VALUES(?, ?); INSERT INTO manufactures (s_id, t_id) VALUES ((SELECT s_id FROM Supplier WHERE username = ?), (SELECT t_id FROM Tool WHERE name = ? AND description = ?))",
+            [name, description, req.session.username, name, description],
             function (err, result) {
                 if(err)
                 {
@@ -82,7 +82,8 @@ router.post("/add_tool", sessionMiddleware.ifNotLoggedin, (req, res, next)=>{
                     //mysql.pool.query("CALL registerUserNewTool(?, ?)",
                     // I couldn't figure out stored procedures so I'm doing
                     // this instead for now:
-                    res.status(200).send("Created tool and registered with manufacturer");
+                    //res.status(200).send("Created tool and registered with manufacturer");
+                    res.status(200).redirect("/supplier");
                 }
             }
         ); // end query
