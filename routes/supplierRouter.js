@@ -17,18 +17,33 @@ try {
 
     var return_data = {};
 
-    mysql.pool.query(
+    function set_user(user) {
+        return_data.currentUser = user;
+    }
+
+    function set_tools(tools) {
+        return_data.tools = tools;
+        console.log(return_data.tools);
+    }
+
+    function set_ingredients(ingredients) {
+        return_data.ingredients = ingredients;
+        console.log(return_data.ingredients);
+    }
+
+
+    var tools = mysql.pool.query(
         "SELECT t.name, t.description FROM Tool t INNER JOIN manufactures m ON m.t_id = t.t_id INNER JOIN Supplier sup ON sup.s_id = m.s_id WHERE username=? ORDER BY t.t_id DESC;",
         [currentUser], // This parameter is given to the SQL.
         //function(err, tool_rows, fields) {
         function(err, results) {
-            console.log(results);
             if(!err) { // No SQL Error
+
                 //
                 // If there is not an error store our results in return_data.
                 //
-                return_data.currentUser = currentUser;
-                return_data.tools = results;
+                set_user(currentUser);
+                set_tools(results);
 
             } else {
                 res.status(500).send("Couldn't load the tools...\n" + err);
@@ -45,15 +60,15 @@ try {
             // If there is not an error store our results in return_data.
             //
             if(!err) {
-                return_data.ingredients = results;
+                set_ingredients(results);
             } else {
                 res.status(500).send("Couldn't load the tools...\n" + err);
             }
         } // end SQL result handler
     ); // end SQL query block
 
-    console.log();
-    console.log();
+    console.log("tools: " + return_data.tools);
+    console.log("ingredients: " + return_data.ingredients);
 
     res.status(200).render("supplier", {
         css: ["supplier.css"],
