@@ -182,17 +182,7 @@ router.post("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next)
         } 
       }
     );
-      
-      //id = mysql.pool.query("SELECT MAX(s_id) From Supplier");
-    // console.log(id);
-      /*
-      console.log("WE GOT HERE\n");
-      mysql.pool.query(
-      "INSERT INTO Supplier (name, username) VALUES (?,?)",
-          [supplier, username]
-          );
 
-        */
   } catch (err) {
     // handle error
     req.render("error", { status: 500, message: "Something went wrong 🤷‍♂️" });
