@@ -120,6 +120,76 @@ router.post("/register", sessionMiddleware.ifLoggedin, (req, res, next) => {
   }
 });
 
+
+
+
+//
+//register supplier page route -- GET
+//
+router.get("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next) => {
+  res
+    .status(200)
+    .render("register_supplier", { css: ["register.css"], js: ["register_supplier.js"] });
+});
+
+//
+// Register supplier page route -- POST
+//
+router.post("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next) => {
+  // get username and password from request
+  const { username, password, supplier} = req.body;
+    console.log(username);
+    console.log(password);
+    console.log(supplier);
+
+
+  // check if username already exists
+  try {
+    mysql.pool.query(
+      "SELECT * FROM End_User u WHERE u.username = ?",
+      [username],
+      (err, rows) => {
+        if (rows.length == 0) {
+          // username doesn't exist
+          // hash password and create new user
+          //let hashedPassword = await bcrypt.hash(password, 12);
+          mysql.pool.query(
+            "INSERT INTO End_User (username, password) VALUES (?, ?)",
+            [username, password],
+            (err) => {
+              if (err) {
+                //handle error
+                res.send({ wasSuccess: false });
+              } else {
+                   mysql.pool.query(
+                       "INSERT INTO Supplier (name, username) VALUES (?,?)",
+                       [supplier, username],
+                       (err) => {
+                           if (err){
+                              res.send({ wasSuccess: false });
+                           }
+                       }
+                   );
+
+                // send success message to client side
+                res.send({ wasSuccess: true });
+              }
+            }
+          );
+        } else {
+          // username already exists
+          res.send({ wasSuccess: false });
+        } 
+      }
+    );
+
+  } catch (err) {
+    // handle error
+    req.render("error", { status: 500, message: "Something went wrong 🤷‍♂️" });
+  }
+});
+
+
 //
 // logout
 //
