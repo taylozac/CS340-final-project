@@ -137,10 +137,10 @@ router.get("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next) 
 //
 router.post("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next) => {
   // get username and password from request
-  const { username, password, companyname } = req.body;
+  const { username, password, supplier} = req.body;
     console.log(username);
     console.log(password);
-    console.log(companyname);
+    console.log(supplier);
 
 
   // check if username already exists
@@ -154,7 +154,6 @@ router.post("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next)
           // hash password and create new user
           //let hashedPassword = await bcrypt.hash(password, 12);
           mysql.pool.query(
-              //We add TRUE to the user to make them a supplier
             "INSERT INTO End_User (username, password) VALUES (?, ?)",
             [username, password],
             (err) => {
@@ -162,6 +161,16 @@ router.post("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next)
                 //handle error
                 res.send({ wasSuccess: false });
               } else {
+                   mysql.pool.query(
+                       "INSERT INTO Supplier (name, username) VALUES (?,?)",
+                       [supplier, username],
+                       (err) => {
+                           if (err){
+                              res.send({ wasSuccess: false });
+                           }
+                       }
+                   );
+
                 // send success message to client side
                 res.send({ wasSuccess: true });
               }
@@ -173,6 +182,17 @@ router.post("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next)
         } 
       }
     );
+      
+      //id = mysql.pool.query("SELECT MAX(s_id) From Supplier");
+    // console.log(id);
+      /*
+      console.log("WE GOT HERE\n");
+      mysql.pool.query(
+      "INSERT INTO Supplier (name, username) VALUES (?,?)",
+          [supplier, username]
+          );
+
+        */
   } catch (err) {
     // handle error
     req.render("error", { status: 500, message: "Something went wrong 🤷‍♂️" });
