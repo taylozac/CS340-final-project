@@ -8,6 +8,8 @@ registerForm.addEventListener("submit", async (event) => {
   // get username and password fields
   let username = registerForm.elements["username"].value;
   let password = registerForm.elements["password"].value;
+  let supplier = registerForm.elements["companyname"].value;
+
   let passwordConfirm = registerForm.elements["confirm-password"].value;
   console.log(username);
   // check that passwords are the same
@@ -21,6 +23,7 @@ registerForm.addEventListener("submit", async (event) => {
       let response = await axios.post("/register_supplier", {
         username,
         password,
+        companyname
       });
 
       if (response.data.wasSuccess) {
