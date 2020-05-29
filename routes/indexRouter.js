@@ -137,7 +137,7 @@ router.get("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next) 
 //
 router.post("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next) => {
   // get username and password from request
-  const { username, password } = req.body;
+  const { username, password, companyname } = req.body;
 
   // check if username already exists
   try {
@@ -151,7 +151,7 @@ router.post("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next)
           //let hashedPassword = await bcrypt.hash(password, 12);
           mysql.pool.query(
               //We add TRUE to the user to make them a supplier
-            "INSERT INTO End_User (username, password, is_supplier) VALUES (?, ?, TRUE)",
+            "INSERT INTO End_User (username, password) VALUES (?, ?)",
             [username, password],
             (err) => {
               if (err) {
@@ -167,6 +167,11 @@ router.post("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next)
           // username already exists
           res.send({ wasSuccess: false });
         }
+          
+          
+          
+          
+          
       }
     );
   } catch (err) {
