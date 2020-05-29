@@ -5,6 +5,17 @@ const async = require("async"); //Required to allow for the multiple SQL queries
 
 const router = express.Router();
 
+class SupRetData{
+    constructor(un, ing, tool)
+    {
+        this.un = "No username";
+        this.ing = [];
+        this.width = [];
+    }
+
+
+}
+
 // supplier home page
 router.get("/", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
 try {
@@ -15,20 +26,19 @@ try {
     // to double-up queries? Might no longer be appropriate to call the page
     // parameter "tools" anymore.
 
-    var return_data = {};
+    var return_data = new SupRetData();
 
     function set_user(user) {
-        return_data.currentUser = user;
+        return_data.un = user;
+        console.log("Updated return_data.un: " + return_data.un);
     }
 
     function set_tools(tools) {
-        return_data.tools = tools;
-        console.log(return_data.tools);
+        return_data.tool = tools;
     }
 
     function set_ingredients(ingredients) {
-        return_data.ingredients = ingredients;
-        console.log(return_data.ingredients);
+        return_data.ing = ingredients;
     }
 
 
@@ -55,10 +65,7 @@ try {
         "SELECT i.name, i.description FROM Ingredient i INNER JOIN stocks s ON s.i_id = i.i_id INNER JOIN Supplier sup ON sup.s_id = s.s_id WHERE username=? ORDER BY i.i_id DESC;",
         [currentUser], // This parameter is given to the SQL.
         function(err, results) {
-
-            //
             // If there is not an error store our results in return_data.
-            //
             if(!err) {
                 set_ingredients(results);
             } else {
@@ -67,15 +74,15 @@ try {
         } // end SQL result handler
     ); // end SQL query block
 
-    console.log("tools: " + return_data.tools);
-    console.log("ingredients: " + return_data.ingredients);
+    console.log("tools: " + return_data.tool);
+    console.log("ingredients: " + return_data.ing);
 
     res.status(200).render("supplier", {
         css: ["supplier.css"],
-        username: return_data.currentUser,
-        ingredients: return_data.ingredients,
-        tools: return_data.tools//, Next should be ingredients
-    }); // End render*/
+        username: return_data.un,
+        ingredients: return_data.ing,
+        tools: return_data.tool
+    }); // End render
 
 
 
