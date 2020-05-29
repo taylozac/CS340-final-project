@@ -6,7 +6,11 @@
         <div class="ingredients-container">
             <ul class="ingredients">
                 {{#each ingredients}}
-                    <li><strong>{{name}}:</strong> {{description}}</li>
+                    <li>
+                        <strong>{{name}}:</strong> {{description}} </br>
+                        Organic: {{organic}} </br>
+                        Shelf Life: {{shelf_life}} </br> </br>
+                    </li>
                 {{/each}}
             </ul>
             <a href="/supplier/add_ingredient" class="supplier-button">Add Ingredient</a>
