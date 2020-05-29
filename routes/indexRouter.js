@@ -138,6 +138,10 @@ router.get("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next) 
 router.post("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next) => {
   // get username and password from request
   const { username, password, companyname } = req.body;
+    console.log(username);
+    console.log(password);
+    console.log(companyname);
+
 
   // check if username already exists
   try {
@@ -166,12 +170,7 @@ router.post("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next)
         } else {
           // username already exists
           res.send({ wasSuccess: false });
-        }
-          
-          
-          
-          
-          
+        } 
       }
     );
   } catch (err) {

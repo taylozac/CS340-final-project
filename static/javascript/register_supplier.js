@@ -11,7 +11,13 @@ registerForm.addEventListener("submit", async (event) => {
   let supplier = registerForm.elements["companyname"].value;
 
   let passwordConfirm = registerForm.elements["confirm-password"].value;
+    
+    
   console.log(username);
+  console.log(password);
+  console.log(supplier);
+    
+    
   // check that passwords are the same
   if (password !== passwordConfirm) {
     alert("Passwords must match!");
@@ -23,7 +29,7 @@ registerForm.addEventListener("submit", async (event) => {
       let response = await axios.post("/register_supplier", {
         username,
         password,
-        companyname
+        supplier
       });
 
       if (response.data.wasSuccess) {
