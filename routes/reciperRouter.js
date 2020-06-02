@@ -59,6 +59,7 @@ router.get(
         // send queried data in response
         res.status(200).render("recipe_detail", {
           css: ["recipe_detail.css"],
+          js: ["delete_recipe.js"],
           recipe: rows[0],
           username: currentUser,
         });
@@ -105,6 +106,90 @@ router.post("/create", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
     res.status(500).send("Couldn't create the recipe.");
   }
 });
+
+
+//
+// delete a recipe from the database
+// 
+router.delete("/delete/:r_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
+  const { r_id } = req.params;
+
+  try {
+    // try to delete the recipe
+    mysql.pool.query(
+      "DELETE FROM Recipe r WHERE r.r_id = ?",
+      [r_id],
+      (err) => {
+        if (err) {
+          console.log(err);
+          res.send({ wasSuccess: false});
+        } else {
+          res.send({ wasSuccess: true });
+        }
+      });
+
+  } catch(err) {
+    // catch any errors when deleting recipe
+    res.send({ wasSuccess: false });
+  }
+
+});
+
+//
+// Update a recipe -- GET
+//
+router.get("/update/:r_id", (req, res, next) => {
+  const r_id = req.params.r_id;
+  const currentUser = req.session.username;
+
+  try {
+    // try to retrieve recipe
+    mysql.pool.query(
+      "SELECT * FROM Recipe r WHERE r.r_id = ?",
+      [r_id],
+      (err, rows) => {
+        if (err) {
+          res.status(500).send("Unable to retrieve selected recipe");
+        } else {
+          res.status(200).render("update_recipe_page", {
+            css: ["create_recipe_page.css"],
+            js: ["update_recipe.js"],
+            recipe: rows[0],
+            username: currentUser,
+          });
+        }
+      });
+
+  } catch (err) {
+    // catch any errors when retieving recipe for update
+    res.status(500).send("Unable to retrieve selected recipe");
+  }
+});
+
+//
+// update a recipe in the database -- PUT
+// 
+router.put("/update/:r_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
+  const r_id = req.params.r_id;
+  const { title, author, description } = req.body;
+
+  // query database with update
+  try {
+    mysql.pool.query(
+      "UPDATE Recipe r SET r.title = ?, r.username = ?, r.directions = ? WHERE r.r_id = ?",
+      [title, author, description, r_id],
+      (err) => {
+        if (err) {
+          res.send({ wasSuccess: false });
+        } else {
+          res.send({ wasSuccess: true });
+        }
+      });
+  } catch(err) {
+    res.send({ wasSuccess: false });
+  }
+});
+
 
 // export the router
 module.exports = router;

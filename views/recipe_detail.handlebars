@@ -1,6 +1,8 @@
 <div class="page-wrapper">
     <div class="recipe-container">
         <div class="recipe-header">
+            <button class="delete-recipe" data-id={{recipe.r_id}}><i class="fas fa-trash-alt fa-lg"></i></button>
+            <a href="/recipes/update/{{recipe.r_id}}" class="update-recipe"><i class="far fa-edit fa-lg"></i></a>
             <h1 class="">Recipe Title: {{recipe.title}}</h1>
         </div>
         <div class="recipe-info">
