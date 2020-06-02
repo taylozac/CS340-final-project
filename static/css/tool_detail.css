@@ -8,7 +8,7 @@ body {
     height: 100%;
 }
 
-.form-container {
+.form-container, .tool-container {
     /* Center in the page */
     position: relative;
     top: 50%;
@@ -25,7 +25,7 @@ body {
     box-shadow: 6px 6px 50px;
 }
 
-.form-title-container {
+.form-title-container, .tool-header {
     text-align: center;
     margin: 20px;
     font-size: 20px;
