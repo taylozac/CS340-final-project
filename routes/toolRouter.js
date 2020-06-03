@@ -25,7 +25,7 @@ router.get("/:t_id", sessionMiddleware.ifNotLoggedin, (req, res, next)=>{
             if(err) // If there was an error
             {
                 res.status(500).send("Couldn't find that tool: " + tool_id);
-                return;
+                //return;
             }
 
             // Query 2: Get the suppliers of this tool.
@@ -51,13 +51,55 @@ router.get("/:t_id", sessionMiddleware.ifNotLoggedin, (req, res, next)=>{
                         tool: rows[0],
                         username: current_user,
                         suppliers: supplier_rows,
-                        owns_tool: username_owns_tool
+                        owns_tool: username_owns_tool,
+                        t_id: req.params.t_id
                     }); // end res.status
                 }
             );
         } // end response function
     ); // End mysql.pool.query
 }); // End router.get()
+
+// Update Tool
+router.post("/update/:t_id", sessionMiddleware.ifNotLoggedin, (req, res, next)=>{
+  try{
+    /* 1. Determine the parameters passed into the update. */
+    const { name_n, desc_n } = req.body;
+    var to_update = req.params.t_id;
+    console.log("Updating tool \"" + name_n + "\" (" + desc_n + "), where t_id = " + to_update);
+    mysql.pool.query(
+        "UPDATE Tool SET name = ?, description = ? WHERE t_id = ?;",
+        [name_n, desc_n, to_update],
+        function(error, result){
+            if(error){
+                    res.status(500).send("Error updating tool. " + error);
+                }
+                else
+                    res.status(200).redirect("/tools/" + req.params.t_id);
+        }
+    );
+  } catch(js_err) {
+    res.status(500).send("Unexpected node.js exception while updating tool.");
+  }
+}); // End router.post
+
+// Delete Tool
+router.post("/delete/:t_id", sessionMiddleware.ifNotLoggedin, (req, res, next)=>{
+  try{
+    mysql.pool.query(
+        "DELETE FROM manufactures WHERE t_id = ?; DELETE FROM uses WHERE t_id = ?; DELETE FROM Tool WHERE t_id = ?;",
+        [req.params.t_id, req.params.t_id, req.params.t_id],
+        function(error, result){
+            if(error)
+                res.status(500).send("Error deleting tool: " + error);
+            else
+                res.status(200).redirect("/home");
+        }
+    );
+  } catch(js_err) {
+    res.status(500).send("Unexpected node.js exception while updating tool.");
+  }
+}); // End router.post
 
 /* If you want to add tool creation that's fine, and you'd do so here,
  * but for now this router will just be for SELECT queries (that you don't
