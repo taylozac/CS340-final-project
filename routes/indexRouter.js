@@ -11,7 +11,6 @@ const router = express.Router();
 //
 router.get("/", sessionMiddleware.ifLoggedin, (req, res, next) => {
   res.status(200).redirect("/login");
-  //.render("login", { css: ["login.css"], js: ["login_form_validation.js"] });
 });
 
 //
@@ -22,6 +21,32 @@ router.get("/login", sessionMiddleware.ifLoggedin, (req, res, next) => {
     .status(200)
     .render("login", { css: ["login.css"], js: ["login_form_validation.js"] });
 });
+
+
+//
+// Helper function to check if the user logging in is a supplier
+//
+function isUserSupplier(username) {
+  // query database to check if the user is a supplier
+  var isSupplier;
+
+  try {
+    mysql.pool.query(
+      "SELECT * FROM Supplier s WHERE s.username = ?",
+      [username],
+      (err, rows) => {
+        if (rows && rows.length == 1) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+  } catch(err) {
+    isSupplier = false;
+  }
+  return isSupplier;
+};
+
 
 //
 // handle login post request
@@ -37,34 +62,45 @@ router.post("/login", sessionMiddleware.ifLoggedin, (req, res, next) => {
       (err, rows) => {
         // see if existing user is returned
         if (rows && rows.length == 1) {
-          try {
             // check password
             let passwordsMatch = password == rows[0].password;
+            let username = rows[0].username;
 
             if (passwordsMatch) {
-              // create cookie to track user
-              req.session.isLoggedIn = true;
-              req.session.username = rows[0].username;
+              try { // if passwords match, check if the user is a supplier
+                mysql.pool.query(
+                  "SELECT * FROM Supplier s WHERE s.username = ?",
+                  [username],
+                  (err, rows) => {
+                    if (rows && rows.length == 1) {
+                      req.session.isLoggedIn = true;
+                      req.session.isSupplier = true;
+                    } else {
+                      req.session.isLoggedIn = true;
+                      req.session.isSupplier = false;
+                    }
 
-              res.send({ wasSuccess: true });
-            } else {
+                    req.session.username = username;
+                    res.send({ wasSuccess: true });
+                  });
+              } catch (err) { // catch any errors while checking if user is a supplier
+                res.send({
+                  wasSuccess: false,
+                  message: "Error ooccurred while checking if user was a supplier",
+                });
+              }
+            } else { // catch any errors while checking if passwords match
               res.send({
                 wasSuccess: false,
                 message: "Passwords do not match.",
               });
             }
-          } catch (err) {
-            res.send({
-              wasSuccess: false,
-              message: "Username does not exist.",
-            });
-          }
-        } else {
+        } else { // if username did not return any rows
           res.send({ wasSuccess: false, message: "Username does not exist." });
         }
       }
     );
-  } catch (err) {
+  } catch (err) { // catch any other errors
     res.status(500).send("Username and Password not recognized");
   }
 });
@@ -205,7 +241,8 @@ router.get("/logout", (req, res, next) => {
 //
 router.get("/home", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
   let currentUser = req.session.username;
-  res.status(200).render("home", { css: ["home.css"], username: currentUser });
+  let isSupplier = req.session.isSupplier;
+  res.status(200).render("home", { css: ["home.css"], username: currentUser, isSupplier: isSupplier });
 });
 
 // export the router
