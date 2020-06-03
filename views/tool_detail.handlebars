@@ -1,0 +1,65 @@
+<div class="page-wrapper">
+  <div class="tool-container">
+
+    <div class="tool-header">
+      <h1>Tool: {{tool.name}}</h1>
+    </div>
+
+    <div class="tool-info>
+
+      <div class="tool-descriptoin">
+        <b>Description:</b><br/>
+        <p class="description">{{tool.description}}</p>
+      </div>
+
+      <div class="supplier-list">
+        <b>Supplied by:</b><br/>
+        <ul>
+          {{#each suppliers}}
+            <li>{{name}}</li>
+          {{/each}}
+        </ul>
+      </div>
+
+    </div>
+  </div> <!-- End tool-container-->
+
+    {{#if owns_tool}}
+      <br><br><br>
+      <div class="form-container">
+        <div class="form-title-container">
+          <hr class="form-logo">
+          <h3>Update this tool</h3>
+        </div>
+
+        <form id="ammend-tool-form" method="post" action="/tools/update/{{tool.t_id}}">
+
+          <span class="form-input-container">
+            <i class="form-field-icon fas fa-tools fa-lg"></i>
+            <input class="form-input-field" type="text" name="name_n" placeholder="Tool Name" required/>
+          </span>
+
+          <span class="form-textarea no-border">
+            <i class="form-field-icon far fa-sticky-note fa-lg"></i>
+            <textarea name="desc_n" id="tool-description" placeholder="description..." cols="30" rows="10">
+            </textarea>
+          </span>
+
+          <span class="form-button-container">
+            <input class="form-button submit" type="submit" value="Update Tool"/>
+          </span>
+        </form>
+        <br/>
+        <!--Delete form is separate, but looks contiguous-->
+        <form id="delete-tool-form" method="post" action="/tools/delete/{{tool.t_id}}">
+          <span class="form-button-container">
+            <input class="form-button submit" type="submit" value="Delete Tool"/>
+          </span>
+        </form>
+        <br/>
+
+      </div>
+    {{/if}}
+
+  </div>
+</div>
