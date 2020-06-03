@@ -185,6 +185,7 @@ router.post("/add_ingredient", sessionMiddleware.ifNotLoggedin, (req, res, next)
     }
 });
 
+
 //
 // This routes to the update page for the ingredient. This is basically the same
 // as the add ingredient page except for the button that says update.
@@ -196,5 +197,34 @@ router.get("/update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, re
       username: currentUser,
     });
 });
+
+
+//
+// This takes the update request from the user and changes the values of the
+// ingredients.
+//
+router.post("update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
+    try {
+        const {name, description} = req.body;
+        mysql.pool.query(
+            "UPDATE Ingredient i SET i.name = ?, i.description = ? WHERE i.i_id = ?",
+            [name, description, req.i_id],
+            function (err, result) {
+                if (error)
+                {
+                    res.status(500).send("Error updating ingredient.\n" + err);
+                }
+                else
+                {
+                    res.status(200).redirect("/supplier");
+                }
+            }
+        );
+    } catch(err) {
+        res.status(500).send("Unexpected exception while updating ingredient.");
+    }
+});
+
+
 
 module.exports = router;
