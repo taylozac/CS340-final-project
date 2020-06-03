@@ -203,14 +203,14 @@ router.get("/update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, re
 // This takes the update request from the user and changes the values of the
 // ingredients.
 //
-router.post("update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
+router.post("/update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
     try {
         const {name, description} = req.body;
         mysql.pool.query(
             "UPDATE Ingredient i SET i.name = ?, i.description = ? WHERE i.i_id = ?",
-            [name, description, req.i_id],
+            [name, description, req.params.i_id],
             function (err, result) {
-                if (error)
+                if (err)
                 {
                     res.status(500).send("Error updating ingredient.\n" + err);
                 }
