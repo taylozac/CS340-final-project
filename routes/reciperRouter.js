@@ -117,12 +117,15 @@ function deleteToolsForRecipe(recipeID) {
       [recipeID],
       (err) => {
         if (err) {
-          console.log("Couldn't remove all uses relationships");
+          throw new Error("Couldn't remove all uses relationships");
         }
       });
   } catch(err) {
-    console.log("Couldn't remove all uses relationships");
+    console.log(err.message);
+    return false;
   }
+  // return true if no errors
+  return true;
 }
 
 // deletes all the consumes relationships for a given recipe r_id
@@ -133,12 +136,15 @@ function deleteIngredientsForRecipe(recipeID) {
       [recipeID],
       (err) => {
         if (err) {
-          console.log("Couldn't remove all consumes relationships");
+          throw new Error("Couldn't remove all consumes relationships");
         }
       });
   } catch(err) {
-    console.log("Couldn't remove all consumes relationships");
+    console.log(err.message);
+    return false;
   }
+  // return true if no errors
+  return true;
 }
 
 // delete all saves relationships with a given recipe
@@ -149,12 +155,15 @@ function deleteSavesForRecipe(recipeID) {
       [recipeID],
       (err) => {
         if (err) {
-          console.log("Couldn't remove all saves relationships");
+          throw new Error("Couldn't remove all saves relationships");
         }
       });
   } catch (err) {
-    console.log("Couldn't remove all saves relationships");
+    console.log(err.message);
+    return false;
   }
+  // return true if no errors
+  return true;
 }
 
 // END OF DELETE RECIPE HELPER FUNCTIONS
@@ -166,9 +175,14 @@ router.delete("/delete/:r_id", sessionMiddleware.ifNotLoggedin, (req, res, next)
   const { r_id } = req.params;
 
   // removes uses and consumes relationships before deleting recipe
-  deleteIngredientsForRecipe(r_id);
-  deleteToolsForRecipe(r_id);
-  deleteSavesForRecipe(r_id);
+  let ingredientsDeleted = deleteIngredientsForRecipe(r_id);
+  let toolsDeleted = deleteToolsForRecipe(r_id);
+  let savesDeleted = deleteSavesForRecipe(r_id);
+
+  if (!ingredientsDeleted || !toolsDeleted || !savesDeleted) {
+    res.send({ wasSuccess: false });
+    return;
+  }
 
   try {
     // try to delete the recipe
