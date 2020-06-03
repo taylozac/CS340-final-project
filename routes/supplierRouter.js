@@ -234,7 +234,7 @@ router.post("/update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, r
 router.post("/update_ingredient/:i_id/delete", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
     try {
         mysql.pool.query(
-            "DELETE FROM Ingredient WHERE i_id = ?",
+            "DELETE FROM stocks WHERE i_id = ?",
             [req.params.i_id],
             function (err, result) {
                 if (err)
@@ -243,7 +243,20 @@ router.post("/update_ingredient/:i_id/delete", sessionMiddleware.ifNotLoggedin, 
                 }
                 else
                 {
-                    res.status(200).redirect("/supplier");
+                    mysql.pool.query(
+                        "DELETE FROM Ingredient WHERE i_id = ?",
+                        [req.params.i_id],
+                        function (err, result) {
+                            if (err)
+                            {
+                                res.status(500).send("Error deleting ingredient.\n" + err);
+                            }
+                            else
+                            {
+                                res.status(200).redirect("/supplier");
+                            }
+                        }
+                    );
                 }
             }
         );
