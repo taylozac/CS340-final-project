@@ -17,6 +17,7 @@ router.get("/", (req, res, next)=>{
 // Show the details for a particular tool.
 router.get("/:t_id", sessionMiddleware.ifNotLoggedin, (req, res, next)=>{
     let current_user = req.session.username;
+    let isSupplier = req.session.isSupplier;
     let tool_id = req.params.t_id;
     mysql.pool.query(
         "SELECT * FROM Tool t WHERE t.t_id = ?",
@@ -50,6 +51,7 @@ router.get("/:t_id", sessionMiddleware.ifNotLoggedin, (req, res, next)=>{
                         css: ["tool_detail.css"],
                         tool: rows[0],
                         username: current_user,
+                        isSupplier: isSupplier,
                         suppliers: supplier_rows,
                         owns_tool: username_owns_tool,
                         t_id: req.params.t_id
@@ -127,4 +129,3 @@ router.post("/create", sessionMiddleware.ifNotLoggedin, (req, res, next)=>{
 
 // VERY IMPORTANT LINE easy for me to forget:
 module.exports = router
-

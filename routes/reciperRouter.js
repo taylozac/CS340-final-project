@@ -11,9 +11,11 @@ const router = express.Router();
 router.get("/user", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
   // specific user information is from session/cookie, not info in url
   let currentUser = req.session.username;
+  let isSupplier = req.session.isSupplier;
 
   res.status(200).render("recipes", {
     username: currentUser,
+    isSupplier: isSupplier,
     css: ["recipes.css", "recipe_preview_card.css"],
     js: ["recipe_search_bar.js"],
   });
@@ -24,6 +26,7 @@ router.get("/user", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
 //
 router.get("/", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
   let currentUser = req.session.username;
+  let isSupplier = req.session.isSupplier;
 
   // qeury dataebase for all recipes
   mysql.pool.query("SELECT * FROM Recipe", function (err, rows, fields) {
@@ -36,6 +39,7 @@ router.get("/", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
         js: ["recipe_search_bar.js"],
         recipes: rows,
         username: currentUser,
+        isSupplier: isSupplier,
       });
     }
   });
@@ -49,6 +53,7 @@ router.get(
   sessionMiddleware.ifNotLoggedin,
   (req, res, next) => {
     let currentUser = req.session.username;
+    let isSupplier = req.session.isSupplier;
     let recipeID = req.params.r_id;
     mysql.pool.query(
       `SELECT * FROM Recipe r WHERE r.r_id = ${recipeID}`,
@@ -62,6 +67,7 @@ router.get(
           js: ["delete_recipe.js"],
           recipe: rows[0],
           username: currentUser,
+          isSupplier: isSupplier,
         });
       }
     );
@@ -73,11 +79,13 @@ router.get(
 //
 router.get("/create", (req, res, next) => {
   let currentUser = req.session.username;
+  let isSupplier = req.session.isSupplier;
 
   res.status(200).render("create_recipe_page", {
     css: ["create_recipe_page.css"],
     js: ["create_recipe.js"],
     username: currentUser,
+    isSupplier: isSupplier,
   });
 });
 
@@ -211,6 +219,7 @@ router.delete("/delete/:r_id", sessionMiddleware.ifNotLoggedin, (req, res, next)
 router.get("/update/:r_id", (req, res, next) => {
   const r_id = req.params.r_id;
   const currentUser = req.session.username;
+  let isSupplier = req.session.isSupplier;
 
   try {
     // try to retrieve recipe
@@ -226,6 +235,7 @@ router.get("/update/:r_id", (req, res, next) => {
             js: ["update_recipe.js"],
             recipe: rows[0],
             username: currentUser,
+            isSupplier: isSupplier,
           });
         }
       });

@@ -1,7 +1,7 @@
 <div class="page-wrapper">
     <div class="container">
         <div class="supplier-header">
-            <h1 class="supplier-name">Supplier Name</h1>
+            <h1 class="supplier-name">Supplier View</h1>
         </div>
         <div class="ingredients-container">
             <ul class="ingredients">
@@ -20,7 +20,10 @@
                 <!--Opting not to use a template for this since tools are
                 so simple to ennumerate.-->
                 {{#each tools}}
-                    <li><strong>{{name}}:</strong> {{description}}</li>
+                    <li>
+                        <a href="/tools/{{t_id}}"><strong>{{name}}:</strong> {{description}}</a>
+                        
+                        </li>
                 {{/each}}
             </ul>
             <a href="/supplier/add_tool" class="supplier-button">Add Tool</a>
