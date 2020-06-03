@@ -38,7 +38,7 @@ try {
                 return_data.tool = results;
                 /*Nested inner query (should be moved to its own function)*/
                 mysql.pool.query(
-                    "SELECT i.name, i.description, i.organic, i.shelf_life FROM Ingredient i INNER JOIN stocks s ON s.i_id = i.i_id INNER JOIN Supplier sup ON sup.s_id = s.s_id WHERE username=? ORDER BY i.i_id DESC;",
+                    "SELECT i.i_id, i.name, i.description, i.organic, i.shelf_life FROM Ingredient i INNER JOIN stocks s ON s.i_id = i.i_id INNER JOIN Supplier sup ON sup.s_id = s.s_id WHERE username=? ORDER BY i.i_id DESC;",
                     [currentUser], // This parameter is given to the SQL.
                     function(err2, results2) {
                         // If there is not an error store our results in return_data.
@@ -52,7 +52,7 @@ try {
                                 tools: return_data.tool
                             }); // End render
                         } else {
-                            res.status(500).send("Couldn't load the tools...\n" + err);
+                            res.status(500).send("Couldn't load the ingredients...\n" + err);
                         }
                     } // end SQL result handleri
                 ); // end SQL query block
@@ -183,6 +183,18 @@ router.post("/add_ingredient", sessionMiddleware.ifNotLoggedin, (req, res, next)
     } catch (err) {
         res.status(500).send("Unexpected exception while creating ingredient.");
     }
+});
+
+//
+// This routes to the update page for the ingredient. This is basically the same
+// as the add ingredient page except for the button that says update.
+//
+router.get("/update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
+    let currentUser = req.session.username;
+    res.status(200).render("update_ingredient_page", {
+      css: ["add_ingredient.css"],
+      username: currentUser,
+    });
 });
 
 module.exports = router;
