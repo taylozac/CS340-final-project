@@ -195,6 +195,7 @@ router.get("/update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, re
     res.status(200).render("update_ingredient_page", {
       css: ["add_ingredient.css"],
       username: currentUser,
+      i_id: req.params.i_id,
     });
 });
 
@@ -207,7 +208,7 @@ router.post("/update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, r
     try {
         const {name, description} = req.body;
         mysql.pool.query(
-            "UPDATE Ingredient i SET i.name = ?, i.description = ? WHERE i.i_id = ?",
+            "UPDATE ingredient i SET i.name = ?, i.description = ? WHERE i.i_id = ?",
             [name, description, req.params.i_id],
             function (err, result) {
                 if (err)
@@ -225,6 +226,31 @@ router.post("/update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, r
     }
 });
 
+
+//
+// This takes the delete request from the user and removes the associated
+// element in the ingredients table.
+//
+router.post("/update_ingredient/:i_id/delete", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
+    try {
+        mysql.pool.query(
+            "DELETE FROM Ingredient WHERE i_id = ?",
+            [req.params.i_id],
+            function (err, result) {
+                if (err)
+                {
+                    res.status(500).send("Error deleting ingredient.\n" + err);
+                }
+                else
+                {
+                    res.status(200).redirect("/supplier");
+                }
+            }
+        );
+    } catch(err) {
+        res.status(500).send("Unexpected exception while deleting ingredient.");
+    }
+});
 
 
 module.exports = router;
