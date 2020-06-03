@@ -2,7 +2,6 @@ const deleteRecipeButton = document.querySelector("button.delete-recipe");
 
 deleteRecipeButton.addEventListener("click", async (event) => {
   const r_id = deleteRecipeButton.getAttribute("data-id");
-  console.log("In browser:", r_id);
   
   let deleteConfirmed = confirm("Are you sure you'd like to delete this recipe?")
   

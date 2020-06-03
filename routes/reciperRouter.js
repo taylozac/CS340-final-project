@@ -107,12 +107,68 @@ router.post("/create", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
   }
 });
 
+// DELETE RECIPE HELPER FUNCTIONS
+
+// deletes all the uses relationships for a given recipe r_id
+function deleteToolsForRecipe(recipeID) {
+  try {
+    mysql.pool.query(
+      "DELETE FROM uses WHERE r_id = ?",
+      [recipeID],
+      (err) => {
+        if (err) {
+          console.log("Couldn't remove all uses relationships");
+        }
+      });
+  } catch(err) {
+    console.log("Couldn't remove all uses relationships");
+  }
+}
+
+// deletes all the consumes relationships for a given recipe r_id
+function deleteIngredientsForRecipe(recipeID) {
+  try {
+    mysql.pool.query(
+      "DELETE FROM consumes WHERE r_id = ?",
+      [recipeID],
+      (err) => {
+        if (err) {
+          console.log("Couldn't remove all consumes relationships");
+        }
+      });
+  } catch(err) {
+    console.log("Couldn't remove all consumes relationships");
+  }
+}
+
+// delete all saves relationships with a given recipe
+function deleteSavesForRecipe(recipeID) {
+  try {
+    mysql.pool.query(
+      "DELETE FROM saves WHERE r_id = ?",
+      [recipeID],
+      (err) => {
+        if (err) {
+          console.log("Couldn't remove all saves relationships");
+        }
+      });
+  } catch (err) {
+    console.log("Couldn't remove all saves relationships");
+  }
+}
+
+// END OF DELETE RECIPE HELPER FUNCTIONS
 
 //
 // delete a recipe from the database
 // 
 router.delete("/delete/:r_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
   const { r_id } = req.params;
+
+  // removes uses and consumes relationships before deleting recipe
+  deleteIngredientsForRecipe(r_id);
+  deleteToolsForRecipe(r_id);
+  deleteSavesForRecipe(r_id);
 
   try {
     // try to delete the recipe
