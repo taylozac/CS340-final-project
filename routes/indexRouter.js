@@ -215,7 +215,7 @@ router.post("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next)
         } else {
           // username already exists
           res.send({ wasSuccess: false });
-        } 
+        }
       }
     );
 

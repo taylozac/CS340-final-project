@@ -4,7 +4,7 @@
         <div class="form-title-container">
             <h1 class="form-logo">EasyEats <i class="fas fa-hamburger fa-lg"></i></h1>
             <hr class="form-logo">
-            <h3>Add New Ingredient</h3>
+            <h3>Update Ingredient</h3>
         </div>
         <form id="new-recipe-form" method="post" action="">
             <span class="form-input-container">
@@ -17,10 +17,14 @@
                     rows="10"></textarea>
             </span>
             <span class="form-button-container">
-                <input class="form-button submit" type="submit" value="Add Ingredient">
+                <input class="form-button submit" type="submit" value="Update Ingredient">
             </span>
         </form>
-
+        <form id="delete-ingredient-form" method="post" action="/supplier/update_ingredient/{{i_id}}/delete">
+            <span>
+                <input class="form-button submit" type="submit" value="Delete Ingredient">
+            </span>
+        </form>
     </div>
 
 </div>
