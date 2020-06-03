@@ -12,6 +12,7 @@ const indexRouter = require("./routes/indexRouter");
 const recipeRouter = require("./routes/reciperRouter");
 const supplierRouter = require("./routes/supplierRouter");
 const toolRouter = require("./routes/toolRouter"); // postfix .js?
+const ingredientRouter = require("./routes/ingredientRouter");
 
 // create new instance of express app and set port
 const app = express();
@@ -65,6 +66,7 @@ app.use("/", indexRouter);
 app.use("/recipes", recipeRouter);
 app.use("/supplier", supplierRouter);
 app.use("/tools", toolRouter);
+app.use("/ingredient", ingredientRouter);
 
 // set function to respond to any unhandled GET request
 app.get("*", (req, res, next) => {
