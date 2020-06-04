@@ -12,12 +12,7 @@ registerForm.addEventListener("submit", async (event) => {
 
   let passwordConfirm = registerForm.elements["confirm-password"].value;
     
-    
   console.log(username);
-  console.log(password);
-  console.log(supplier);
-    
-    
   // check that passwords are the same
   if (password !== passwordConfirm) {
     alert("Passwords must match!");

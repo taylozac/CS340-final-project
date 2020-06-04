@@ -227,6 +227,51 @@ router.post("/register_supplier", sessionMiddleware.ifLoggedin, (req, res, next)
 
 
 //
+// change_password page route -- GET
+//
+
+router.get("/change_password", sessionMiddleware.ifLoggedin, (req, res, next) => {
+    console.log("We are here!");
+
+  res
+    .status(200)
+    .render("change_password", { css: ["register.css"], js: ["change_password.js"] });
+});
+
+//
+// change_password page route -- POST
+//
+router.post("/change_password", sessionMiddleware.ifLoggedin, (req, res, next) => {
+  // get username and password from request
+  const { username, password} = req.body;
+  // check if username already exists
+  try {
+      //We are going to assume that since we are logged in, the user account exists.
+
+          mysql.pool.query(
+              //We add TRUE to the user to make them a supplier
+            "UPDATE End_User SET password = ? WHERE username = ?",
+            [password, username],
+            (err) => {
+              if (err) {
+                //handle error
+                console.log("ERROR in password reset!");
+                res.send({ wasSuccess: false });
+              } else {
+                // send success message to client side
+                  console.log("Successfully changed password!");
+                res.redirect("/login");
+              }
+            }
+          );
+  } catch (err) {
+    // handle error
+    req.render("error", { status: 500, message: "Something went wrong ?????" });
+  }
+});
+
+
+//
 // logout
 //
 router.get("/logout", (req, res, next) => {

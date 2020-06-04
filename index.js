@@ -16,7 +16,7 @@ const ingredientRouter = require("./routes/ingredientRouter");
 
 // create new instance of express app and set port
 const app = express();
-const port = process.argv[2] || 3000;
+const port = process.argv[2] || 7357;
 app.set("port", port);
 
 // ste body parser setting
