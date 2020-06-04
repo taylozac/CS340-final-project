@@ -9,6 +9,7 @@ class SupRetData{
     constructor(un, ing, tool)
     {
         this.un = "No username";
+        this.isSupplier = false,
         this.ing = [];
         this.width = [];
     }
@@ -20,6 +21,7 @@ class SupRetData{
 router.get("/", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
 try {
     let currentUser = req.session.username;
+    let isSupplier = req.session.isSupplier;
     // This SQL query could use work if we violate the assumption that all
     // users only manage exactly one supplier if they manage one.
     // Also, I'm not sure how to expand this to include ingredients. Is it possible
@@ -29,13 +31,15 @@ try {
     var return_data = new SupRetData();
 
     var tools = mysql.pool.query(
-        "SELECT t.name, t.description FROM Tool t INNER JOIN manufactures m ON m.t_id = t.t_id INNER JOIN Supplier sup ON sup.s_id = m.s_id WHERE username=? ORDER BY t.t_id DESC;",
+        "SELECT t.t_id, t.name, t.description FROM Tool t INNER JOIN manufactures m ON m.t_id = t.t_id INNER JOIN Supplier sup ON sup.s_id = m.s_id WHERE username=? ORDER BY t.t_id DESC;",
         [currentUser], // This parameter is given to the SQL.
         //function(err, tool_rows, fields) {
         function(err, results) {
             if(!err) { // No SQL Error
                 return_data.un = currentUser;
+                return_data.isSupplier = isSupplier;
                 return_data.tool = results;
+                console.log(return_data.tool);
                 /*Nested inner query (should be moved to its own function)*/
                 mysql.pool.query(
                     "SELECT i.i_id, i.name, i.description, i.organic, i.shelf_life FROM Ingredient i INNER JOIN stocks s ON s.i_id = i.i_id INNER JOIN Supplier sup ON sup.s_id = s.s_id WHERE username=? ORDER BY i.i_id DESC;",
@@ -48,6 +52,7 @@ try {
                             res.status(200).render("supplier", {
                                 css: ["supplier.css"],
                                 username: return_data.un,
+                                isSupplier: return_data.isSupplier,
                                 ingredients: return_data.ing,
                                 tools: return_data.tool
                             }); // End render
@@ -105,9 +110,11 @@ router.get(
   sessionMiddleware.ifNotLoggedin,
   (req, res, next) => {
     let currentUser = req.session.username;
+    let isSupplier = req.session.isSupplier;
     res.status(200).render("add_ingredient_page", {
       css: ["add_ingredient.css"],
       username: currentUser,
+      isSupplier: isSupplier,
     });
   }
 );
@@ -115,9 +122,10 @@ router.get(
 // add new tool page
 router.get("/add_tool", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
     let currentUser = req.session.username; // Needed?
+    let isSupplier = req.session.isSupplier;
     res.status(200).render(
         "add_tool_page",
-        { css: ["add_tool.css"], username: currentUser }
+        { css: ["add_tool.css"], username: currentUser, isSupplier: isSupplier }
     );
 });
 
@@ -192,9 +200,11 @@ router.post("/add_ingredient", sessionMiddleware.ifNotLoggedin, (req, res, next)
 //
 router.get("/update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
     let currentUser = req.session.username;
+    let isSupplier = req.session.isSupplier;
     res.status(200).render("update_ingredient_page", {
       css: ["add_ingredient.css"],
       username: currentUser,
+      isSupplier: isSupplier,
       i_id: req.params.i_id,
     });
 });

@@ -1,0 +1,30 @@
+<div class="page-wrapper">
+
+    <div class="form-container">
+        <div class="form-title-container">
+            <h1 class="form-logo">EasyEats <i class="fas fa-hamburger fa-lg"></i></h1>
+            <hr class="form-logo">
+            <h3>Update Recipe</h3>
+        </div>
+        <form id="update-recipe-form" data-id={{recipe.r_id}} method="post" action="">
+            <span class="form-input-container">
+                <i class="form-field-icon fas fa-utensils fa-lg"></i>
+                <input class="form-input-field" type="text" name="title" value="{{recipe.title}}" placeholder="Recipe Title" required>
+            </span>
+            <span class="form-input-container">
+                <i class="form-field-icon fas fa-user fa-lg"></i>
+                <input class="form-input-field" type="text" name="author" value="{{recipe.username}}" placeholder="Author" required>
+            </span>
+            <span class="form-textarea no-border">
+                <i class="form-field-icon far fa-sticky-note fa-lg"></i>
+                <textarea name="description" id="recipe-desription" value="{{recipe.directions}}" placeholder="directions..." cols="30"
+                    rows="10"></textarea>
+            </span>
+            <span class="form-button-container">
+                <input class="form-button submit" type="submit" value="Update Recipe">
+            </span>
+        </form>
+
+    </div>
+
+</div>

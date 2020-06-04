@@ -14,6 +14,7 @@ router.get("/", (req, res, next) => {
 
 router.get("/:i_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
 
+    let isSupplier = req.session.isSupplier;
     let current_user = req.session.username;
     let req_i_id = req.params.i_id;
 
@@ -43,7 +44,8 @@ router.get("/:i_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
             res.status(200).render("ingredient_detail", {
                 css: [main.css],
                 ingredient: rows[0],
-                username: current_user
+                username: current_user,
+                isSupplier: isSupplier,
             });
         }
     );
