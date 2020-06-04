@@ -141,7 +141,7 @@ router.post("/add_tool", sessionMiddleware.ifNotLoggedin, (req, res, next)=>{
         //var my_sql_con = mysql.createConnection({multipleStatements: true});
         //my_sql.pool.multipleStatements = true;
         mysql.pool.query(
-            "INSERT INTO Tool (name, description) VALUES(?, ?); INSERT INTO manufactures (s_id, t_id) VALUES (SELECT s_id FROM Supplier WHERE username = ?), (SELECT t_id FROM Tool WHERE name = ? AND description = ?)",
+            "INSERT INTO Tool (name, description) VALUES(?, ?); INSERT INTO manufactures (s_id, t_id) VALUES ((SELECT s_id FROM Supplier WHERE username = ?), (SELECT t_id FROM Tool WHERE name = ? AND description = ?))",
             [name, description, req.session.username, name, description],
             function (err, result) {
                 if(err)
