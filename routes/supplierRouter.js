@@ -218,7 +218,7 @@ router.post("/update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, r
     try {
         const {name, description} = req.body;
         mysql.pool.query(
-            "UPDATE ingredient i SET i.name = ?, i.description = ? WHERE i.i_id = ?",
+            "UPDATE Ingredient i SET i.name = ?, i.description = ? WHERE i.i_id = ?",
             [name, description, req.params.i_id],
             function (err, result) {
                 if (err)
