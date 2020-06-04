@@ -195,7 +195,7 @@ router.delete("/delete/:r_id", sessionMiddleware.ifNotLoggedin, (req, res, next)
   try {
     // try to delete the recipe
     mysql.pool.query(
-      "DELETE FROM Recipe r WHERE r.r_id = ?",
+      "DELETE FROM Recipe WHERE r_id = ?",
       [r_id],
       (err) => {
         if (err) {

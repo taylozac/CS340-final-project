@@ -141,7 +141,7 @@ router.post("/add_tool", sessionMiddleware.ifNotLoggedin, (req, res, next)=>{
         //var my_sql_con = mysql.createConnection({multipleStatements: true});
         //my_sql.pool.multipleStatements = true;
         mysql.pool.query(
-            "INSERT INTO Tool (name, description) VALUES(?, ?); INSERT INTO manufactures (s_id, t_id) VALUES ((SELECT s_id FROM Supplier WHERE username = ?), (SELECT t_id FROM Tool WHERE name = ? AND description = ?))",
+            "INSERT INTO Tool (name, description) VALUES(?, ?); INSERT INTO manufactures (s_id, t_id) VALUES (SELECT s_id FROM Supplier WHERE username = ?), (SELECT t_id FROM Tool WHERE name = ? AND description = ?))",
             [name, description, req.session.username, name, description],
             function (err, result) {
                 if(err)
@@ -218,7 +218,7 @@ router.post("/update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, r
     try {
         const {name, description} = req.body;
         mysql.pool.query(
-            "UPDATE ingredient i SET i.name = ?, i.description = ? WHERE i.i_id = ?",
+            "UPDATE Ingredient i SET i.name = ?, i.description = ? WHERE i.i_id = ?",
             [name, description, req.params.i_id],
             function (err, result) {
                 if (err)
