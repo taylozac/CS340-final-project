@@ -10,8 +10,11 @@ saveRecipeButton.addEventListener("click", async (event) => {
   if (response.data.wasSuccess) {
     alert("Recipe saved to My Recipes");
     window.location = "/recipes/user";
+  } else if (response.data.alreadySaved) {
+    alert("This recipe is already saved");
   } else {
     alert("unable to save recipe");
   }
+
 
 });
