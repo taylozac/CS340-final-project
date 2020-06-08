@@ -5,6 +5,62 @@ const sessionMiddleware = require("../sessionMiddleware.js");
 // create new router tp handle requests
 const router = express.Router();
 
+
+// SAVE POST HELPER FUNCTIONS
+function isRecipeAlreadySaved(username, recipeId) {
+  try {
+    mysql.pool.query(
+      "SELECT * FROM saves WHERE username = ? AND r_id = ?",
+      [username, recipeId],
+      (err) => {
+        if (err) {
+          throw new Error("Recipe already saved!");
+        }
+      });
+  } catch (err) {
+    return false;
+  }
+
+  return true;
+}
+
+function saveRecipeForUser(username, recipeId) {
+  try {
+    mysql.pool.query(
+      "INSERT INTO saves(username, r_id) VALUES (?, ?)",
+      [username, recipeId],
+      (err) => {
+        if (err) {
+          throw new Error("Unable to save recipe.");
+        }
+      });
+  } catch (err) {
+    return false;
+  }
+
+  return true;
+}
+
+
+//
+// Save a recipe
+//
+router.post("/save", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
+  const { recipeId } = req.body;
+  const currentUser = req.session.username;
+
+  let wasSuccess;
+  const alreadySaved = isRecipeAlreadySaved(currentUser, recipeId);
+
+  if (!alreadySaved) {
+    wasSuccess = saveRecipeForUser(currentUser, recipeId);
+    res.send({ wasSuccess });
+  } else {
+    res.send({ wasSuccess: true });
+  }
+
+});
+
 //
 // get recipes for specific user
 //
@@ -64,7 +120,7 @@ router.get(
         // send queried data in response
         res.status(200).render("recipe_detail", {
           css: ["recipe_detail.css"],
-          js: ["delete_recipe.js"],
+          js: ["delete_recipe.js", "save_recipe.js"],
           recipe: rows[0],
           username: currentUser,
           isSupplier: isSupplier,
@@ -128,7 +184,7 @@ function deleteToolsForRecipe(recipeID) {
           throw new Error("Couldn't remove all uses relationships");
         }
       });
-  } catch(err) {
+  } catch (err) {
     console.log(err.message);
     return false;
   }
@@ -147,7 +203,7 @@ function deleteIngredientsForRecipe(recipeID) {
           throw new Error("Couldn't remove all consumes relationships");
         }
       });
-  } catch(err) {
+  } catch (err) {
     console.log(err.message);
     return false;
   }
@@ -200,13 +256,13 @@ router.delete("/delete/:r_id", sessionMiddleware.ifNotLoggedin, (req, res, next)
       (err) => {
         if (err) {
           console.log(err);
-          res.send({ wasSuccess: false});
+          res.send({ wasSuccess: false });
         } else {
           res.send({ wasSuccess: true });
         }
       });
 
-  } catch(err) {
+  } catch (err) {
     // catch any errors when deleting recipe
     res.send({ wasSuccess: false });
   }
@@ -265,7 +321,7 @@ router.put("/update/:r_id", sessionMiddleware.ifNotLoggedin, (req, res, next) =>
           res.send({ wasSuccess: true });
         }
       });
-  } catch(err) {
+  } catch (err) {
     res.send({ wasSuccess: false });
   }
 });

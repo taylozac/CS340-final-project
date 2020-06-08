@@ -1,8 +1,8 @@
 <div class="page-wrapper">
     <div class="page-header">
         <div class="page-title">
-            {{#if userID}}
-            <h1>My Recipes: userID: {{userID}}</h1>
+            {{#if username}}
+            <h1>My Recipes</h1>
             {{else}}
             <h1>All Recipes</h1>
             {{/if}}
@@ -23,44 +23,5 @@
         {{#each recipes}}
             {{> recipe_preview }}
         {{/each}}
-        
-        {{!-- <div class="recipe-preview-card">
-            <div class="recipe-header">
-                <h1 class="recipe-title">Recipe Title:</h1>
-            </div>
-            <div class="recipe-info">
-                <h4 class="recipe-author">Recipe Author:</h4>
-                <p class="recipe-description">Recipe Description:</p>
-            </div>
-            <div class="recipe-button">
-                <a href="/recipes/detail/1">View recipe<i class="fas fa-arrow-right"></i></a>
-            </div>
-        </div>
-
-        <div class="recipe-preview-card">
-            <div class="recipe-header">
-                <h1 class="recipe-title">Recipe Title:</h1>
-            </div>
-            <div class="recipe-info">
-                <h4 class="recipe-author">Recipe Author:</h4>
-                <p class="recipe-description">Recipe Description:</p>
-            </div>
-            <div class="recipe-button">
-                <a href="/recipes/detail/1">View recipe<i class="fas fa-arrow-right"></i></a>
-            </div>
-        </div>
-
-        <div class="recipe-preview-card">
-            <div class="recipe-header">
-                <h1 class="recipe-title">Recipe Title:</h1>
-            </div>
-            <div class="recipe-info">
-                <h4 class="recipe-author">Recipe Author:</h4>
-                <p class="recipe-description">Recipe Description:</p>
-            </div>
-            <div class="recipe-button">
-                <a href="/recipes/detail/1">View recipe<i class="fas fa-arrow-right"></i></a>
-            </div>
-        </div> --}}
     </div>
 </div>
