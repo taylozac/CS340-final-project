@@ -8,39 +8,45 @@ const router = express.Router();
 
 // SAVE POST HELPER FUNCTIONS
 function isRecipeAlreadySaved(username, recipeId) {
-  try {
+  return new Promise((resolve, reject) => {
+
     mysql.pool.query(
       "SELECT * FROM saves WHERE username = ? AND r_id = ?",
       [username, recipeId],
-      (err) => {
+      (err, rows) => {
         if (err) {
-          throw new Error("Recipe already saved!");
+          resolve(false);
+        } else if (rows && rows.length == 0) {
+          resolve(false);
+        } else {
+          resolve(true);
         }
       });
-  } catch (err) {
-    return false;
-  }
 
-  return true;
+  })
+
 }
 
 function saveRecipeForUser(username, recipeId) {
-  try {
-    mysql.pool.query(
-      "INSERT INTO saves(username, r_id) VALUES (?, ?)",
-      [username, recipeId],
-      (err) => {
-        if (err) {
-          throw new Error("Unable to save recipe.");
-        }
-      });
-  } catch (err) {
-    return false;
-  }
+  return new Promise((resolve, reject) => {
+    try {
+      mysql.pool.query(
+        "INSERT INTO saves(username, r_id) VALUES (?, ?)",
+        [username, recipeId],
+        (err) => {
+          if (err) {
+            throw new Error("Unable to save recipe.");
+          } else {
+            resolve(true);
+          }
+        });
+    } catch (err) {
+      reject("Unable to save recipe");
+    }
+  });
 
-  return true;
 }
-
+// END OF SAVE POST HELPER FUNCTIONS
 
 //
 // Save a recipe
@@ -49,16 +55,17 @@ router.post("/save", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
   const { recipeId } = req.body;
   const currentUser = req.session.username;
 
-  let wasSuccess;
-  const alreadySaved = isRecipeAlreadySaved(currentUser, recipeId);
-
-  if (!alreadySaved) {
-    wasSuccess = saveRecipeForUser(currentUser, recipeId);
-    res.send({ wasSuccess });
-  } else {
-    res.send({ wasSuccess: true });
-  }
-
+  isRecipeAlreadySaved(currentUser, recipeId) // check if recipe is already saved
+    .then((alreadySaved) => {
+      if (!alreadySaved) { //if promise resolves to true, save the recipe
+        saveRecipeForUser(currentUser, recipeId)
+          .then(wasSuccess => res.send({ wasSuccess }))
+          .catch((err) => res.send({ wasSuccess: false }))
+      } else {
+        res.send({ wasSuccess: false, alreadySaved: true })
+      }
+    })
+    .catch((err) => res.send({ wasSuccess: false, alreadySaved: true }));
 });
 
 //
@@ -69,12 +76,28 @@ router.get("/user", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
   let currentUser = req.session.username;
   let isSupplier = req.session.isSupplier;
 
-  res.status(200).render("recipes", {
-    username: currentUser,
-    isSupplier: isSupplier,
-    css: ["recipes.css", "recipe_preview_card.css"],
-    js: ["recipe_search_bar.js"],
-  });
+  try {
+    mysql.pool.query(
+      "SELECT * FROM Recipe WHERE r_id IN (SELECT r_id FROM saves WHERE username = ?)",
+      [currentUser],
+      (err, rows) => {
+        if (!err) {
+          res.status(200).render("recipes", {
+            username: currentUser,
+            isSupplier: isSupplier,
+            recipes: rows,
+            isUserRecipes: true,
+            css: ["recipes.css", "recipe_preview_card.css"],
+            js: ["recipe_search_bar.js"],
+          });
+        }
+      });
+  } catch (err) {
+    // if error return empty list
+    res.status(500).send("couldn't retrieve user recipes.");
+  }
+
+
 });
 
 //
@@ -96,6 +119,7 @@ router.get("/", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
         recipes: rows,
         username: currentUser,
         isSupplier: isSupplier,
+        isUserRecipes: false,
       });
     }
   });
