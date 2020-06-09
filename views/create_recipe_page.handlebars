@@ -7,18 +7,38 @@
             <h3>Create New Recipe</h3>
         </div>
         <form id="new-recipe-form" method="post" action="">
-            <span class="form-input-container">
-                <i class="form-field-icon fas fa-utensils fa-lg"></i>
-                <input class="form-input-field" type="text" name="title" placeholder="Recipe Title" required>
-            </span>
-            <span class="form-input-container">
-                <i class="form-field-icon fas fa-user fa-lg"></i>
-                <input class="form-input-field" type="text" name="author" value="{{username}}" required>
-            </span>
-            <span class="form-textarea no-border">
-                <i class="form-field-icon far fa-sticky-note fa-lg"></i>
-                <textarea name="description" id="recipe-desription" placeholder="directions..." cols="30" rows="10"></textarea>
-            </span>
+            <div class="form-section-fields">
+                <span class="form-input-container">
+                    <i class="form-field-icon fas fa-utensils fa-lg"></i>
+                    <input class="form-input-field" type="text" name="title" placeholder="Recipe Title" required>
+                </span>
+                <span class="form-input-container">
+                    <i class="form-field-icon fas fa-user fa-lg"></i>
+                    <input class="form-input-field" type="text" name="author" value="{{username}}" required>
+                </span>
+                <span class="form-textarea no-border">
+                    <i class="form-field-icon far fa-sticky-note fa-lg"></i>
+                    <textarea name="description" id="recipe-desription" placeholder="directions..." cols="10" rows="5"></textarea>
+                </span>
+                
+            </div>
+
+            <div class="form-section-select">
+                <div class="select-ingredients">
+                    <div>Select Ingredients</div>
+                    {{#each ingredients}}
+                    <input type="checkbox" value={{this.i_id}} name={{this.name}}>{{this.name}}
+                    {{/each}}
+                </div>
+                <div class="select-tools">
+                    <div>Select Tools</div>
+                    
+                    {{#each tools}}
+                    <input type="checkbox" value={{this.t_id}} name={{this.name}}>{{this.name}}
+                    {{/each}}
+        
+                </div>
+            </div>
             <span class="form-button-container">
                 <input class="form-button submit" type="submit" value="Create Recipe">
             </span>

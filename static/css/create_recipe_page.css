@@ -6,24 +6,25 @@ body {
 .page-wrapper {
     width: 100vw;
     height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 
 .form-container {
-    /* Center in the page */
-    position: relative;
-    top: 50%;
-    left: 50%;
-    /* bring your own prefixes */
-    transform: translate(-50%, -50%);
-    
-    height: auto;
-    width: 400px;
+    min-height: 75%;
+    width: auto;
     border: 1px solid #ccc;
     border-radius: 10px;
     padding: 30px;
+    margin: 0 30px;
     padding-top: 5px;
     background-color: white;
     box-shadow: 6px 6px 50px;
+
+    display: grid;
+    grid-template-rows: 10rem 1fr;
 }
 
 .form-title-container {
@@ -47,8 +48,24 @@ h3 {
     color: #3f2b96;
 }
 
-#login-form {
+#new-recipe-form {
     margin-top: 35px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 5rem;
+    grid-template-areas: "field select"
+                          "button button";
+}
+
+.form-section-fields, .form-section-select {
+    min-width: 400px;
+    margin: 0 30px;
+}
+
+.form-section-select {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
 .form-input-container {
@@ -80,6 +97,7 @@ input {
 
 /* Div containing form buttons */
 .form-button-container {
+    grid-area: button;
     display: grid;
     grid-template-columns: 1fr;
 }
@@ -124,4 +142,11 @@ a {
 
 .form-textarea textarea {
     padding: 5px;
+}
+
+
+input[type="checkbox"]{
+    -webkit-appearance: checkbox;
+    margin-right: 0.2rem;
+    margin-left: 0.4rem;
 }

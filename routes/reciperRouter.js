@@ -1,6 +1,7 @@
 const express = require("express");
 const mysql = require("../dbcon.js");
 const sessionMiddleware = require("../sessionMiddleware.js");
+const promise = require("bluebird");
 
 // create new router tp handle requests
 const router = express.Router();
@@ -126,6 +127,43 @@ router.get("/", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
 });
 
 //
+// RECIPE DETAIL HELPER GET FUNCTIONS
+//
+function getAllIngredientsForRecipe(recipeId) {
+  return new Promise((resolve, reject) => {
+    // qeury dataebase for all recipes
+    mysql.pool.query("SELECT * FROM Ingredient WHERE i_id IN (SELECT i_id FROM consumes WHERE r_id = ?)",
+      [recipeId],
+      (err, rows, fields) => {
+        if (!err && rows) {
+          resolve(rows);
+        } else {
+          reject("unable to retrieve ingredients");
+        }
+      });
+  })
+}
+
+function getAllToolsForRecipe(recipeId) {
+  return new Promise((resolve, reject) => {
+    // qeury dataebase for all recipes
+    mysql.pool.query("SELECT * FROM Tool WHERE t_id IN (SELECT t_id FROM uses WHERE r_id = ?)",
+      [recipeId],
+      (err, rows, fields) => {
+        if (!err && rows) {
+          resolve(rows);
+        } else {
+          reject("unable to retrieve tools");
+        }
+      });
+  })
+}
+
+//
+// END OF RECIPE DETAIL HELPER GET FUNCTIONS
+//
+
+//
 // Detail view of an individual recipe
 //
 router.get(
@@ -135,24 +173,66 @@ router.get(
     let currentUser = req.session.username;
     let isSupplier = req.session.isSupplier;
     let recipeID = req.params.r_id;
-    mysql.pool.query(
-      `SELECT * FROM Recipe r WHERE r.r_id = ${recipeID}`,
-      function (err, rows, fields) {
-        if (err) {
-          res.status(500).send("Couldn't retrieve the recipe.");
+
+    let ingredientsPromise = getAllIngredientsForRecipe(recipeID);
+    let toolsPromise = getAllToolsForRecipe(recipeID);
+
+    promise.join(ingredientsPromise, toolsPromise, (ingredients, tools) => {
+      mysql.pool.query(
+        "SELECT * FROM Recipe r WHERE r.r_id = ?",
+        [recipeID],
+        function (err, rows, fields) {
+          if (err) {
+            res.status(500).send("Couldn't retrieve the recipe.");
+          }
+          // send queried data in response
+          res.status(200).render("recipe_detail", {
+            css: ["recipe_detail.css"],
+            js: ["delete_recipe.js", "save_recipe.js"],
+            recipe: rows[0],
+            username: currentUser,
+            isSupplier: isSupplier,
+            ingredients: ingredients,
+            tools: tools,
+          });
         }
-        // send queried data in response
-        res.status(200).render("recipe_detail", {
-          css: ["recipe_detail.css"],
-          js: ["delete_recipe.js", "save_recipe.js"],
-          recipe: rows[0],
-          username: currentUser,
-          isSupplier: isSupplier,
-        });
-      }
-    );
+      );
+    })
   }
 );
+
+//
+// CREATE RECIPE HELPER GET FUNCTIONS
+//
+function getAllIngredients() {
+  return new Promise((resolve, reject) => {
+    // qeury dataebase for all recipes
+    mysql.pool.query("SELECT * FROM Ingredient", (err, rows, fields) => {
+      if (err) {
+        reject("unable to retrieve ingredients");
+      } else {
+        resolve(rows);
+      }
+    });
+  })
+}
+
+function getAllTools() {
+  return new Promise((resolve, reject) => {
+    // qeury dataebase for all recipes
+    mysql.pool.query("SELECT * FROM Tool", (err, rows, fields) => {
+      if (err) {
+        reject("unable to retrieve tools");
+      } else {
+        resolve(rows);
+      }
+    });
+  })
+}
+
+//
+// END OF CREATE RECIPE GET HELPER FUNCTIONS
+//
 
 //
 // create new recipe view
@@ -161,13 +241,94 @@ router.get("/create", (req, res, next) => {
   let currentUser = req.session.username;
   let isSupplier = req.session.isSupplier;
 
-  res.status(200).render("create_recipe_page", {
-    css: ["create_recipe_page.css"],
-    js: ["create_recipe.js"],
-    username: currentUser,
-    isSupplier: isSupplier,
+  let ingredientsPromise = getAllIngredients();
+  let toolsPromise = getAllTools();
+
+  promise.join(ingredientsPromise, toolsPromise, (ingredients, tools) => {
+    res.status(200).render("create_recipe_page", {
+      css: ["create_recipe_page.css"],
+      js: ["create_recipe.js"],
+      username: currentUser,
+      isSupplier: isSupplier,
+      tools: tools,
+      ingredients: ingredients,
+    });
   });
 });
+
+// CREATE NEW RECIPE POST HELPER FUNCTION
+
+// function gets the ID of the recipe that was just created
+function getIdForNewlyCreatedRecipe(title, description, author) {
+  return new Promise((resolve, reject) => {
+    mysql.pool.query(
+      "SELECT r_id FROM Recipe WHERE title = ? AND directions = ? AND username = ?",
+      [title, description, author],
+      function (err, rows) {
+        if (!err && rows) {
+          resolve(rows[0]);
+        }
+        else {
+          reject("unable to retrieve recipe");
+        }
+      }
+    );
+  })
+}
+
+// function adds a new consumes relationship to database for ingredient and recipe
+function addRecipeIngredient(ingredientId, recipeId, amount = 1) {
+  try {
+    mysql.pool.query(
+      "INSERT INTO consumes(r_id, i_id, amount) VALUES(?, ?, ?)",
+      [recipeId, ingredientId, amount],
+      (err) => {
+        if (err) {
+          throw new Error("Couldn't add ingredient to recipe");
+        }
+      });
+  } catch (err) {
+    console.log(err.message);
+    return false;
+  }
+  // return true if no errors
+  return true;
+}
+
+//function adds a new uses relationship to database between tool and recipe
+function addRecipeTool(toolId, recipeId) {
+  try {
+    mysql.pool.query(
+      "INSERT INTO uses(r_id, t_id) VALUES(?, ?)",
+      [recipeId, toolId],
+      (err) => {
+        if (err) {
+          throw new Error("Couldn't add tool to recipe");
+        }
+      });
+  } catch (err) {
+    console.log(err.message);
+    return false;
+  }
+  // return true if no errors
+  return true;
+}
+
+// adds all tools in list to recipe via uses relationship
+function addAllToolsToRecipe(recipeId, tools) {
+  for (tool of tools) {
+    addRecipeTool(tool, recipeId);
+  }
+}
+
+// adds all ingredients in list to recipe via consumes relationship
+function addAllIngredientsToRecipe(recipeId, ingredients) {
+  for (ingredient of ingredients) {
+    addRecipeIngredient(ingredient, recipeId);
+  }
+}
+
+// END OF CREATE NEW RECIPE POST HELPER FUNCTION
 
 //
 // handle submitted form for new recipe
@@ -175,8 +336,7 @@ router.get("/create", (req, res, next) => {
 router.post("/create", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
   try {
     // get value from form and create recipe in database
-    const { title, author, description } = req.body;
-
+    const { title, author, description, tools, ingredients } = req.body;
     // try to insert into the database
     mysql.pool.query(
       "INSERT INTO Recipe (title, directions, username) VALUES(?, ?, ?)",
@@ -185,7 +345,17 @@ router.post("/create", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
         if (err) {
           res.status(500).send("Couldn't create the recipe.");
         } else {
-          res.status(200).send("recipe created");
+          getIdForNewlyCreatedRecipe(title, description, author)
+            .then((recipeId) => {
+              addAllIngredientsToRecipe(recipeId.r_id, ingredients);
+              addAllToolsToRecipe(recipeId.r_id, tools);
+            })
+            .then(() => {
+              res.status(200).send("recipe created");
+            })
+            .catch(() => {
+              res.status(500).send("Couldn't create the recipe.");
+            })
         }
       }
     );
