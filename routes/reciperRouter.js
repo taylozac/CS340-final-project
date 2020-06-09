@@ -47,6 +47,43 @@ router.get("/", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
 });
 
 //
+// RECIPE DETAIL HELPER GET FUNCTIONS
+//
+function getAllIngredientsForRecipe(recipeId) {
+  return new Promise((resolve, reject) => {
+    // qeury dataebase for all recipes
+    mysql.pool.query("SELECT * FROM Ingredient WHERE i_id IN (SELECT i_id FROM consumes WHERE r_id = ?)",
+      [recipeId],
+      (err, rows, fields) => {
+        if (!err && rows) {
+          resolve(rows);
+        } else {
+          reject("unable to retrieve ingredients");
+        }
+      });
+  })
+}
+
+function getAllToolsForRecipe(recipeId) {
+  return new Promise((resolve, reject) => {
+    // qeury dataebase for all recipes
+    mysql.pool.query("SELECT * FROM Tool WHERE t_id IN (SELECT t_id FROM uses WHERE r_id = ?)",
+      [recipeId],
+      (err, rows, fields) => {
+        if (!err && rows) {
+          resolve(rows);
+        } else {
+          reject("unable to retrieve tools");
+        }
+      });
+  })
+}
+
+//
+// END OF RECIPE DETAIL HELPER GET FUNCTIONS
+//
+
+//
 // Detail view of an individual recipe
 //
 router.get(
@@ -56,22 +93,31 @@ router.get(
     let currentUser = req.session.username;
     let isSupplier = req.session.isSupplier;
     let recipeID = req.params.r_id;
-    mysql.pool.query(
-      `SELECT * FROM Recipe r WHERE r.r_id = ${recipeID}`,
-      function (err, rows, fields) {
-        if (err) {
-          res.status(500).send("Couldn't retrieve the recipe.");
+
+    let ingredientsPromise = getAllIngredientsForRecipe(recipeID);
+    let toolsPromise = getAllToolsForRecipe(recipeID);
+
+    promise.join(ingredientsPromise, toolsPromise, (ingredients, tools) => {
+      mysql.pool.query(
+        "SELECT * FROM Recipe r WHERE r.r_id = ?",
+        [recipeID],
+        function (err, rows, fields) {
+          if (err) {
+            res.status(500).send("Couldn't retrieve the recipe.");
+          }
+          // send queried data in response
+          res.status(200).render("recipe_detail", {
+            css: ["recipe_detail.css"],
+            js: ["delete_recipe.js"],
+            recipe: rows[0],
+            username: currentUser,
+            isSupplier: isSupplier,
+            ingredients: ingredients,
+            tools: tools,
+          });
         }
-        // send queried data in response
-        res.status(200).render("recipe_detail", {
-          css: ["recipe_detail.css"],
-          js: ["delete_recipe.js"],
-          recipe: rows[0],
-          username: currentUser,
-          isSupplier: isSupplier,
-        });
-      }
-    );
+      );
+    })
   }
 );
 
