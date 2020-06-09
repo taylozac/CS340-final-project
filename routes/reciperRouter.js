@@ -132,12 +132,74 @@ router.get("/create", (req, res, next) => {
 
 // CREATE NEW RECIPE POST HELPER FUNCTION
 
-function addRecipeIngredients() {
-
+// function gets the ID of the recipe that was just created
+function getIdForNewlyCreatedRecipe(title, description, author) {
+  return new Promise((resolve, reject) => {
+    mysql.pool.query(
+      "SELECT r_id FROM Recipe WHERE title = ? AND directions = ? AND username = ?",
+      [title, description, author],
+      function (err, rows) {
+        if (!err && rows) {
+          resolve(rows[0]);
+        }
+        else {
+          reject("unable to retrieve recipe");
+        }
+      }
+    );
+  })
 }
 
-function addRecipeTools() {
+// function adds a new consumes relationship to database for ingredient and recipe
+function addRecipeIngredient(ingredientId, recipeId, amount = 1) {
+  try {
+    mysql.pool.query(
+      "INSERT INTO consumes(r_id, i_id, amount) VALUES(?, ?, ?)",
+      [recipeId, ingredientId, amount],
+      (err) => {
+        if (err) {
+          throw new Error("Couldn't add ingredient to recipe");
+        }
+      });
+  } catch (err) {
+    console.log(err.message);
+    return false;
+  }
+  // return true if no errors
+  return true;
+}
 
+//function adds a new uses relationship to database between tool and recipe
+function addRecipeTool(toolId, recipeId) {
+  try {
+    mysql.pool.query(
+      "INSERT INTO uses(r_id, t_id) VALUES(?, ?)",
+      [recipeId, toolId],
+      (err) => {
+        if (err) {
+          throw new Error("Couldn't add tool to recipe");
+        }
+      });
+  } catch (err) {
+    console.log(err.message);
+    return false;
+  }
+  // return true if no errors
+  return true;
+}
+
+// adds all tools in list to recipe via uses relationship
+function addAllToolsToRecipe(recipeId, tools) {
+  for (tool of tools) {
+    addRecipeTool(tool, recipeId);
+  }
+}
+
+// adds all ingredients in list to recipe via consumes relationship
+function addAllIngredientsToRecipe(recipeId, ingredients) {
+  for (ingredient of ingredients) {
+    addRecipeIngredient(ingredient, recipeId);
+  }
 }
 
 // END OF CREATE NEW RECIPE POST HELPER FUNCTION
@@ -149,7 +211,6 @@ router.post("/create", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
   try {
     // get value from form and create recipe in database
     const { title, author, description, tools, ingredients } = req.body;
-
     // try to insert into the database
     mysql.pool.query(
       "INSERT INTO Recipe (title, directions, username) VALUES(?, ?, ?)",
@@ -158,7 +219,17 @@ router.post("/create", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
         if (err) {
           res.status(500).send("Couldn't create the recipe.");
         } else {
-          res.status(200).send("recipe created");
+          getIdForNewlyCreatedRecipe(title, description, author)
+            .then((recipeId) => {
+              addAllIngredientsToRecipe(recipeId.r_id, ingredients);
+              addAllToolsToRecipe(recipeId.r_id, tools);
+            })
+            .then(() => {
+              res.status(200).send("recipe created");
+            })
+            .catch(() => {
+              res.status(500).send("Couldn't create the recipe.");
+            })
         }
       }
     );
