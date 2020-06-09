@@ -5,6 +5,69 @@ const sessionMiddleware = require("../sessionMiddleware.js");
 // create new router tp handle requests
 const router = express.Router();
 
+
+// SAVE POST HELPER FUNCTIONS
+function isRecipeAlreadySaved(username, recipeId) {
+  return new Promise((resolve, reject) => {
+
+    mysql.pool.query(
+      "SELECT * FROM saves WHERE username = ? AND r_id = ?",
+      [username, recipeId],
+      (err, rows) => {
+        if (err) {
+          resolve(false);
+        } else if (rows && rows.length == 0) {
+          resolve(false);
+        } else {
+          resolve(true);
+        }
+      });
+
+  })
+
+}
+
+function saveRecipeForUser(username, recipeId) {
+  return new Promise((resolve, reject) => {
+    try {
+      mysql.pool.query(
+        "INSERT INTO saves(username, r_id) VALUES (?, ?)",
+        [username, recipeId],
+        (err) => {
+          if (err) {
+            throw new Error("Unable to save recipe.");
+          } else {
+            resolve(true);
+          }
+        });
+    } catch (err) {
+      reject("Unable to save recipe");
+    }
+  });
+
+}
+// END OF SAVE POST HELPER FUNCTIONS
+
+//
+// Save a recipe
+//
+router.post("/save", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
+  const { recipeId } = req.body;
+  const currentUser = req.session.username;
+
+  isRecipeAlreadySaved(currentUser, recipeId) // check if recipe is already saved
+    .then((alreadySaved) => {
+      if (!alreadySaved) { //if promise resolves to true, save the recipe
+        saveRecipeForUser(currentUser, recipeId)
+          .then(wasSuccess => res.send({ wasSuccess }))
+          .catch((err) => res.send({ wasSuccess: false }))
+      } else {
+        res.send({ wasSuccess: false, alreadySaved: true })
+      }
+    })
+    .catch((err) => res.send({ wasSuccess: false, alreadySaved: true }));
+});
+
 //
 // get recipes for specific user
 //
@@ -13,12 +76,28 @@ router.get("/user", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
   let currentUser = req.session.username;
   let isSupplier = req.session.isSupplier;
 
-  res.status(200).render("recipes", {
-    username: currentUser,
-    isSupplier: isSupplier,
-    css: ["recipes.css", "recipe_preview_card.css"],
-    js: ["recipe_search_bar.js"],
-  });
+  try {
+    mysql.pool.query(
+      "SELECT * FROM Recipe WHERE r_id IN (SELECT r_id FROM saves WHERE username = ?)",
+      [currentUser],
+      (err, rows) => {
+        if (!err) {
+          res.status(200).render("recipes", {
+            username: currentUser,
+            isSupplier: isSupplier,
+            recipes: rows,
+            isUserRecipes: true,
+            css: ["recipes.css", "recipe_preview_card.css"],
+            js: ["recipe_search_bar.js"],
+          });
+        }
+      });
+  } catch (err) {
+    // if error return empty list
+    res.status(500).send("couldn't retrieve user recipes.");
+  }
+
+
 });
 
 //
@@ -40,6 +119,7 @@ router.get("/", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
         recipes: rows,
         username: currentUser,
         isSupplier: isSupplier,
+        isUserRecipes: false,
       });
     }
   });
@@ -64,7 +144,7 @@ router.get(
         // send queried data in response
         res.status(200).render("recipe_detail", {
           css: ["recipe_detail.css"],
-          js: ["delete_recipe.js"],
+          js: ["delete_recipe.js", "save_recipe.js"],
           recipe: rows[0],
           username: currentUser,
           isSupplier: isSupplier,
@@ -128,7 +208,7 @@ function deleteToolsForRecipe(recipeID) {
           throw new Error("Couldn't remove all uses relationships");
         }
       });
-  } catch(err) {
+  } catch (err) {
     console.log(err.message);
     return false;
   }
@@ -147,7 +227,7 @@ function deleteIngredientsForRecipe(recipeID) {
           throw new Error("Couldn't remove all consumes relationships");
         }
       });
-  } catch(err) {
+  } catch (err) {
     console.log(err.message);
     return false;
   }
@@ -200,13 +280,13 @@ router.delete("/delete/:r_id", sessionMiddleware.ifNotLoggedin, (req, res, next)
       (err) => {
         if (err) {
           console.log(err);
-          res.send({ wasSuccess: false});
+          res.send({ wasSuccess: false });
         } else {
           res.send({ wasSuccess: true });
         }
       });
 
-  } catch(err) {
+  } catch (err) {
     // catch any errors when deleting recipe
     res.send({ wasSuccess: false });
   }
@@ -265,7 +345,7 @@ router.put("/update/:r_id", sessionMiddleware.ifNotLoggedin, (req, res, next) =>
           res.send({ wasSuccess: true });
         }
       });
-  } catch(err) {
+  } catch (err) {
     res.send({ wasSuccess: false });
   }
 });
