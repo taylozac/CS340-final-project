@@ -1,6 +1,7 @@
 const express = require("express");
 const mysql = require("../dbcon.js");
 const sessionMiddleware = require("../sessionMiddleware.js");
+const promise = require("bluebird");
 
 // create new router tp handle requests
 const router = express.Router();
@@ -75,19 +76,71 @@ router.get(
 );
 
 //
+// CREATE RECIPE HELPER GET FUNCTIONS
+//
+function getAllIngredients() {
+  return new Promise((resolve, reject) => {
+    // qeury dataebase for all recipes
+    mysql.pool.query("SELECT * FROM Ingredient", (err, rows, fields) => {
+      if (err) {
+        reject("unable to retrieve ingredients");
+      } else {
+        resolve(rows);
+      }
+    });
+  })
+}
+
+function getAllTools() {
+  return new Promise((resolve, reject) => {
+    // qeury dataebase for all recipes
+    mysql.pool.query("SELECT * FROM Tool", (err, rows, fields) => {
+      if (err) {
+        reject("unable to retrieve tools");
+      } else {
+        resolve(rows);
+      }
+    });
+  })
+}
+
+//
+// END OF CREATE RECIPE GET HELPER FUNCTIONS
+//
+
+//
 // create new recipe view
 //
 router.get("/create", (req, res, next) => {
   let currentUser = req.session.username;
   let isSupplier = req.session.isSupplier;
 
-  res.status(200).render("create_recipe_page", {
-    css: ["create_recipe_page.css"],
-    js: ["create_recipe.js"],
-    username: currentUser,
-    isSupplier: isSupplier,
+  let ingredientsPromise = getAllIngredients();
+  let toolsPromise = getAllTools();
+
+  promise.join(ingredientsPromise, toolsPromise, (ingredients, tools) => {
+    res.status(200).render("create_recipe_page", {
+      css: ["create_recipe_page.css"],
+      js: ["create_recipe.js"],
+      username: currentUser,
+      isSupplier: isSupplier,
+      tools: tools,
+      ingredients: ingredients,
+    });
   });
 });
+
+// CREATE NEW RECIPE POST HELPER FUNCTION
+
+function addRecipeIngredients() {
+
+}
+
+function addRecipeTools() {
+
+}
+
+// END OF CREATE NEW RECIPE POST HELPER FUNCTION
 
 //
 // handle submitted form for new recipe
@@ -95,7 +148,7 @@ router.get("/create", (req, res, next) => {
 router.post("/create", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
   try {
     // get value from form and create recipe in database
-    const { title, author, description } = req.body;
+    const { title, author, description, tools, ingredients } = req.body;
 
     // try to insert into the database
     mysql.pool.query(
@@ -128,7 +181,7 @@ function deleteToolsForRecipe(recipeID) {
           throw new Error("Couldn't remove all uses relationships");
         }
       });
-  } catch(err) {
+  } catch (err) {
     console.log(err.message);
     return false;
   }
@@ -147,7 +200,7 @@ function deleteIngredientsForRecipe(recipeID) {
           throw new Error("Couldn't remove all consumes relationships");
         }
       });
-  } catch(err) {
+  } catch (err) {
     console.log(err.message);
     return false;
   }
@@ -200,13 +253,13 @@ router.delete("/delete/:r_id", sessionMiddleware.ifNotLoggedin, (req, res, next)
       (err) => {
         if (err) {
           console.log(err);
-          res.send({ wasSuccess: false});
+          res.send({ wasSuccess: false });
         } else {
           res.send({ wasSuccess: true });
         }
       });
 
-  } catch(err) {
+  } catch (err) {
     // catch any errors when deleting recipe
     res.send({ wasSuccess: false });
   }
@@ -265,7 +318,7 @@ router.put("/update/:r_id", sessionMiddleware.ifNotLoggedin, (req, res, next) =>
           res.send({ wasSuccess: true });
         }
       });
-  } catch(err) {
+  } catch (err) {
     res.send({ wasSuccess: false });
   }
 });
