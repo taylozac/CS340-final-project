@@ -1,0 +1,26 @@
+DELIMITER $$
+CREATE DEFINER=`cs340_prathere`@`%` PROCEDURE `DELETE_SAVES_RELATIONSHIPS_FOR_RECIPE`(IN `recipe_id` INT)
+    NO SQL
+DELETE FROM saves WHERE r_id = recipe_id$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`cs340_prathere`@`%` PROCEDURE `DELETE_CONSUMES_RELATIONSHIPS_FOR_RECIPE`(IN `recipe_id` INT)
+    NO SQL
+DELETE FROM consumes WHERE r_id = recipe_id$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`cs340_prathere`@`%` PROCEDURE `DELETE_USES_RELATIONSHIPS_FOR_RECIPE`(IN `recipe_id` INT)
+    NO SQL
+DELETE FROM uses WHERE r_id = recipe_id$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`cs340_prathere`@`%` PROCEDURE `GET_INGREDIENTS_FOR_RECIPE`(IN `recipe_id` INT)
+    NO SQL
+SELECT *
+FROM Ingredient i
+LEFT JOIN consumes c ON c.i_id = i.i_id WHERE c.r_id = recipe_id
+ORDER BY i.name$$
+DELIMITER ;
