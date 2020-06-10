@@ -173,10 +173,18 @@ router.post("/add_tool", sessionMiddleware.ifNotLoggedin, (req, res, next)=>{
 //
 router.post("/add_ingredient", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
     try {
-        const { name, description } = req.body;
+        const { name, description, organic, amount, shelf_life } = req.body;
+        //var organic_bool = organic != NULL || organic == "organic"; //HTML tomfoolery
+        // console.log("Organic: " + organic);
+        var organic_bool = false;
+        // Weird how POST handles checkbox input. lol
+        try {
+            if(organic != undefined) // or == "organic"
+                organic_bool = true;
+        } catch(r) { }
         mysql.pool.query(
-            "INSERT INTO Ingredient (name, description) VALUES(?, ?); INSERT INTO stocks (s_id, i_id) VALUES ((SELECT s_id FROM Supplier WHERE username = ?), (SELECT i_id FROM Ingredient WHERE name = ? AND description = ?))",
-            [name, description, req.session.username, name, description],
+            "INSERT INTO Ingredient (name, description, organic, shelf_life) VALUES(?, ?, ?, ?); INSERT INTO stocks (s_id, i_id, amount) VALUES ((SELECT s_id FROM Supplier WHERE username = ?), (SELECT i_id FROM Ingredient WHERE name = ? AND description = ?), ?)",
+            [name, description, organic_bool, shelf_life, req.session.username, name, description, amount],
             function (err, result) {
                 if(err)
                 {
