@@ -132,11 +132,12 @@ router.get("/", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
 function getAllIngredientsForRecipe(recipeId) {
   return new Promise((resolve, reject) => {
     // qeury dataebase for all recipes
-    mysql.pool.query("SELECT * FROM Ingredient WHERE i_id IN (SELECT i_id FROM consumes WHERE r_id = ?)",
+    // SELECT * FROM Ingredient WHERE i_id IN (SELECT i_id FROM consumes WHERE r_id = ?)
+    mysql.pool.query("CALL GET_INGREDIENTS_FOR_RECIPE(?)",
       [recipeId],
       (err, rows, fields) => {
         if (!err && rows) {
-          resolve(rows);
+          resolve(rows[0]);
         } else {
           reject("unable to retrieve ingredients");
         }
@@ -371,7 +372,7 @@ router.post("/create", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
 function deleteToolsForRecipe(recipeID) {
   try {
     mysql.pool.query(
-      "DELETE FROM uses WHERE r_id = ?",
+      "CALL DELETE_USES_RELATIONSHIPS_FOR_RECIPE(?)",
       [recipeID],
       (err) => {
         if (err) {
@@ -390,7 +391,7 @@ function deleteToolsForRecipe(recipeID) {
 function deleteIngredientsForRecipe(recipeID) {
   try {
     mysql.pool.query(
-      "DELETE FROM consumes WHERE r_id = ?",
+      "CALL DELETE_CONSUMES_RELATIONSHIPS_FOR_RECIPE(?)",
       [recipeID],
       (err) => {
         if (err) {
@@ -409,7 +410,7 @@ function deleteIngredientsForRecipe(recipeID) {
 function deleteSavesForRecipe(recipeID) {
   try {
     mysql.pool.query(
-      "DELETE FROM saves WHERE r_id = ?",
+      "CALL DELETE_SAVES_RELATIONSHIPS_FOR_RECIPE(?)",
       [recipeID],
       (err) => {
         if (err) {
@@ -428,7 +429,7 @@ function deleteSavesForRecipe(recipeID) {
 
 //
 // delete a recipe from the database
-// 
+//
 router.delete("/delete/:r_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
   const { r_id } = req.params;
 
@@ -498,7 +499,7 @@ router.get("/update/:r_id", (req, res, next) => {
 
 //
 // update a recipe in the database -- PUT
-// 
+//
 router.put("/update/:r_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
   const r_id = req.params.r_id;
   const { title, author, description } = req.body;
