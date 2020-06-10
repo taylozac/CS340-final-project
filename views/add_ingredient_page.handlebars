@@ -6,6 +6,7 @@
             <hr class="form-logo">
             <h3>Add New Ingredient</h3>
         </div>
+        <!--Interesting; in future maybe have action URL separate?-->
         <form id="new-recipe-form" method="post" action="">
             <span class="form-input-container">
                 <i class="form-field-icon fas fa-utensils fa-lg"></i>
@@ -15,6 +16,16 @@
                 <i class="form-field-icon far fa-sticky-note fa-lg"></i>
                 <textarea name="description" id="ingredient-desription" placeholder="decription..." cols="30"
                     rows="10"></textarea>
+            </span>
+            <span class="form-input-container">
+                <label for="organic">Organic?</label>
+                <input type="checkbox" id="organic" name="organic" value="organic" style="-webkit-appearance: checkbox;"><br>
+            </span>
+            <span class="form-input-container">
+                Shelf life? <input class="form-input-field" type="date" name="shelf_life">
+            </span>
+            <span class="form-input-container">
+                Amount to stock? <input class="form-input-field" type="text" name="amount">
             </span>
             <span class="form-button-container">
                 <input class="form-button submit" type="submit" value="Add Ingredient">
