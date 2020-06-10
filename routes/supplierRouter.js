@@ -224,10 +224,15 @@ router.get("/update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, re
 //
 router.post("/update_ingredient/:i_id", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
     try {
-        const {name, description} = req.body;
+        const {name, description, organic, shelf_life} = req.body;
+        var organic_bool = false;
+        try {
+            if(organic != undefined) // or == "organic"
+                organic_bool = true;
+        } catch(r) { }
         mysql.pool.query(
-            "UPDATE Ingredient i SET i.name = ?, i.description = ? WHERE i.i_id = ?",
-            [name, description, req.params.i_id],
+            "UPDATE Ingredient i SET i.name = ?, i.description = ?, i.organic = ?, i.shelf_life = ? WHERE i.i_id = ?",
+            [name, description, organic_bool, shelf_life, req.params.i_id],
             function (err, result) {
                 if (err)
                 {
