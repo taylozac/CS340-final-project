@@ -137,7 +137,7 @@ function getAllIngredientsForRecipe(recipeId) {
       [recipeId],
       (err, rows, fields) => {
         if (!err && rows) {
-          resolve(rows);
+          resolve(rows[0]);
         } else {
           reject("unable to retrieve ingredients");
         }
@@ -372,7 +372,7 @@ router.post("/create", sessionMiddleware.ifNotLoggedin, (req, res, next) => {
 function deleteToolsForRecipe(recipeID) {
   try {
     mysql.pool.query(
-      "DELETE FROM uses WHERE r_id = ?",
+      "CALL DELETE_USES_RELATIONSHIPS_FOR_RECIPE(?)",
       [recipeID],
       (err) => {
         if (err) {
@@ -391,7 +391,7 @@ function deleteToolsForRecipe(recipeID) {
 function deleteIngredientsForRecipe(recipeID) {
   try {
     mysql.pool.query(
-      "DELETE FROM consumes WHERE r_id = ?",
+      "CALL DELETE_CONSUMES_RELATIONSHIPS_FOR_RECIPE(?)",
       [recipeID],
       (err) => {
         if (err) {
@@ -410,7 +410,7 @@ function deleteIngredientsForRecipe(recipeID) {
 function deleteSavesForRecipe(recipeID) {
   try {
     mysql.pool.query(
-      "DELETE FROM saves WHERE r_id = ?",
+      "CALL DELETE_SAVES_RELATIONSHIPS_FOR_RECIPE(?)",
       [recipeID],
       (err) => {
         if (err) {
